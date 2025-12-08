@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useKeenSlider } from 'keen-slider/react';
-import 'keen-slider/keen-slider.min.css';
-import CategoryCard from './CategoryCard';
+import React, { useState } from "react";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
+import CategoryCard from "./CategoryCard";
+import Headline from "../Headline";
+import WebPageWrapper from "../WebPageWrapper";
 
 // TypeScript Interfaces
 interface Category {
@@ -15,27 +17,27 @@ interface Category {
 // Updated data with '/assets' prepended to original paths
 const categories: Category[] = [
   {
-    img: '/assets/img/cat/cat1.png',
+    img: "/assets/img/cat/cat1.png",
     label: "skin care",
     qty: "13",
   },
   {
-    img: '/assets/img/cat/cat2.png',
+    img: "/assets/img/cat/cat2.png",
     label: "health care",
     qty: "13",
   },
   {
-    img: '/assets/img/cat/cat3.png',
+    img: "/assets/img/cat/cat3.png",
     label: "Makeup Tools",
     qty: "13",
   },
   {
-    img: '/assets/img/cat/cat4.png',
+    img: "/assets/img/cat/cat4.png",
     label: "Makeup",
     qty: "13",
   },
   {
-    img: '/assets/img/cat/cat3.png',
+    img: "/assets/img/cat/cat3.png",
     label: "skin care tools",
     qty: "13",
   },
@@ -76,12 +78,12 @@ const HomeCategory = () => {
   });
 
   return (
-    <>
-      {/* <Headline
+    <WebPageWrapper>
+      <Headline
         mainText="Popular Categories"
         subText="Some of our popular categories include cosmetic"
         className="mb-10"
-      /> */}
+      />
 
       <div className="relative group px-4">
         {/* Navigation Arrows */}
@@ -138,7 +140,7 @@ const HomeCategory = () => {
           })}
         </div>
       )}
-    </>
+    </WebPageWrapper>
   );
 };
 

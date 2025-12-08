@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Star, ShoppingCart } from "lucide-react";
+import WebPageWrapper from "../WebPageWrapper";
+import Headline from "../Headline";
 
 type Product = {
   mainImg: string;
@@ -141,11 +143,12 @@ export default function HomeProduct() {
   ];
 
   return (
-    <div className="w-full">
-      <h2 className="text-3xl font-bold mb-10 text-center">Our Products</h2>
-      <p className="text-gray-500 text-center -mt-8 mb-10">
-        Add our products to weekly line up
-      </p>
+    <WebPageWrapper>
+      <Headline
+        className="mb-10 scroll-fade-up"
+        mainText="Our Products"
+        subText="Add our products to weekly line up"
+      />
 
       <div className="grid grid-cols-5 gap-8">
         {products.map((item, index) => (
@@ -236,6 +239,6 @@ export default function HomeProduct() {
           </div>
         </button>
       </div>
-    </div>
+    </WebPageWrapper>
   );
 }

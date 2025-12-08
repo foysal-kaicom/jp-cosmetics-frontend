@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Truck, Headset, HandCoins, Gift } from "lucide-react";
+import WebPageWrapper from "../WebPageWrapper";
 
 export default function HomeUsp() {
   const usp = [
@@ -28,7 +29,7 @@ export default function HomeUsp() {
   ];
 
   return (
-    <div className="w-full">
+    <WebPageWrapper>
       <div className="grid grid-cols-2 md:grid-cols-4 bg-[#ec6b81] text-white p-10 rounded-xl gap-6">
         {usp.map((item, index) => {
           const Icon = item.icon;
@@ -46,6 +47,6 @@ export default function HomeUsp() {
           );
         })}
       </div>
-    </div>
+    </WebPageWrapper>
   );
 }
