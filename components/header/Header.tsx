@@ -114,7 +114,7 @@ export default function Header() {
 
               {/* Account */}
               <Link 
-                href="/account"
+                href="/user/dashboard"
                 className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group"
               >
                 <div className="p-2 rounded-full group-hover:bg-pink-50 transition-colors">
