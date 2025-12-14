@@ -6,7 +6,6 @@ import HomePromo from "@/components/home/HomePromo";
 import HomeReview from "@/components/home/HomeReview";
 import HomeTrending from "@/components/home/HomeTrending";
 import HomeUsp from "@/components/home/HomeUsp";
-import Image from "next/image";
 
 export default function Home() {
   return (
@@ -19,7 +18,7 @@ export default function Home() {
         <HomeBrands />
         <HomeTrending />
         <HomeReview />
-        <HomePromo  />
+        <HomePromo />
       </div>
     </>
   );

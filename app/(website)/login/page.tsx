@@ -118,30 +118,6 @@ const Login = () => {
               </span>
             </div>
 
-            {/* Toggle Tabs */}
-            <div className="flex bg-gray-100 rounded-xl p-1 mb-8">
-              <button
-                onClick={() => setIsLogin(true)}
-                className={`flex-1 py-3 rounded-lg font-semibold transition-all cursor-pointer ${
-                  isLogin 
-                    ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-lg' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => setIsLogin(false)}
-                className={`flex-1 py-3 rounded-lg font-semibold transition-all cursor-pointer ${
-                  !isLogin 
-                    ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-lg' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
-
             {/* Social Login Buttons */}
             <div className="space-y-3 mb-6">
               <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-300 rounded-xl hover:border-pink-500 hover:bg-pink-50 transition-all font-semibold text-gray-700 cursor-pointer">
@@ -162,48 +138,7 @@ const Login = () => {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Sign Up Fields */}
-              {!isLogin && (
-                <>
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-2">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required={!isLogin}
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-semibold text-gray-900 mb-2">
-                      Phone Number
-                    </label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required={!isLogin}
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-                        placeholder="+880 1234 567890"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+             
 
               {/* Email */}
               <div>

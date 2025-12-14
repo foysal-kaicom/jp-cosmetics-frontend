@@ -31,7 +31,7 @@ export default function HomeHero() {
         cta: "Explore Now",
       },
       {
-        image: "/assets/img/home/hero2.webp",
+        image: "/assets/img/home/hero2.png",
         title: "Luxury Redefined",
         subtitle: "Premium Selection",
         description:
@@ -40,7 +40,7 @@ export default function HomeHero() {
         cta: "Shop Collection",
       },
       {
-        image: "/assets/img/home/hero3.webp",
+        image: "/assets/img/home/hero3.png",
         title: "Confidence in Every Shade",
         subtitle: "Bold & Beautiful",
         description:

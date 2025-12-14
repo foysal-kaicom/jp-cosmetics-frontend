@@ -102,7 +102,7 @@ export default function Header() {
                 ) : (
                   <button
                     onClick={() => setSearchOpen(true)}
-                    className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group"
+                    className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group cursor-pointer"
                   >
                     <div className="p-2 rounded-full group-hover:bg-pink-50 transition-colors">
                       <Search className="w-5 h-5" />
@@ -125,7 +125,7 @@ export default function Header() {
 
               {/* Wishlist */}
               <Link 
-                href="/wishlist"
+                href="/user/wishlist"
                 className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group relative"
               >
                 <div className="p-2 rounded-full group-hover:bg-pink-50 transition-colors">
@@ -187,7 +187,7 @@ export default function Header() {
 
               {/* Mobile Icons */}
               <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
-                <button className="flex flex-col items-center gap-2 text-gray-600">
+                <button className="flex flex-col items-center gap-2 text-gray-600 cursor-pointer">
                   <Search className="w-6 h-6" />
                   <span className="text-xs">Search</span>
                 </button>

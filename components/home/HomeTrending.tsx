@@ -144,7 +144,7 @@ const HomeTrending = () => {
       />
       {/* Show All Button */}
       <div className="flex justify-center mb-5">
-        <button className="relative w-[160px] overflow-hidden rounded-md bg-[#ec6b81] p-1 font-semibold text-white shadow-md group scroll-fade-up">
+        <button className="relative w-[160px] overflow-hidden rounded-md bg-[#ec6b81] p-1 font-semibold text-white shadow-md group scroll-fade-up cursor-pointer">
           <span className="absolute inset-0 bg-[#d85a72] rounded-md -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
           <div className="relative z-10 flex items-center justify-center text-sm px-8 py-2">
             Show All
@@ -183,6 +183,7 @@ const HomeTrending = () => {
             <div key={index} className="keen-slider__slide h-auto">
               {/* Pass product prop if ProductCard expects it */}
               <ProductCard
+                key={index}
                 product={product}
                 className="m-1.5 h-full"
               />
