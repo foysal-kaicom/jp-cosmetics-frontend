@@ -6,19 +6,31 @@ import HomePromo from "@/components/home/HomePromo";
 import HomeReview from "@/components/home/HomeReview";
 import HomeTrending from "@/components/home/HomeTrending";
 import HomeUsp from "@/components/home/HomeUsp";
+import { getBrands, getCategories, getFooterSliders, getHeroSliders, getPopularCategories } from "@/services/home.service";
 
-export default function Home() {
+export default async function Home() {
+
+  const heroSliders = await getHeroSliders();
+
+  const popularCategories = await getPopularCategories();
+
+  const categories = await getCategories();
+
+  const brands = await getBrands();
+
+  const footerSliders = await getFooterSliders();
+
   return (
     <>
       <div className="space-y-20 pb-10">
-        <HomeHero />
+        <HomeHero heroSliders={heroSliders} popularCategories={popularCategories} />
         <HomeUsp />
-        <HomeCategory />
+        <HomeCategory popularCategories={categories} />
         <HomeProduct />
-        <HomeBrands />
+        <HomeBrands brands={brands} />
         <HomeTrending />
         <HomeReview />
-        <HomePromo />
+        <HomePromo footerSliders={footerSliders} />
       </div>
     </>
   );

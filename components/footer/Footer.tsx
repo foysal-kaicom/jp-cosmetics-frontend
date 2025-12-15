@@ -1,9 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mail, MapPin, Phone, Facebook, Instagram, Twitter, Send } from "lucide-react";
+import Image from "next/image";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  Facebook,
+  Instagram,
+  Twitter,
+  Send,
+  Linkedin,
+  InstagramIcon,
+  Youtube,
+} from "lucide-react";
+import { BusinessInfo } from "@/types";
+import Link from "next/link";
 
-export default function Footer() {
+interface FooterProps {
+  data: BusinessInfo;
+}
+
+export default function Footer({ data }: FooterProps) {
   const [email, setEmail] = useState("");
 
   const subscribe = (e: React.MouseEvent) => {
@@ -13,9 +31,10 @@ export default function Footer() {
     setEmail("");
   };
 
+  const footerLogo = data.footer_logo || "/assets/img/jp-cosmetica-logo.png";
+
   return (
     <footer className="bg-gradient-to-br from-pink-50 via-white to-rose-50">
-      
       {/* Newsletter Section */}
       <div className="px-[5%] py-16 md:py-20">
         <div className="max-w-4xl mx-auto text-center">
@@ -26,7 +45,8 @@ export default function Footer() {
             Stay Beautiful with Our Newsletter
           </h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Get exclusive beauty tips, product launches, and special offers delivered straight to your inbox.
+            Get exclusive beauty tips, product launches, and special offers
+            delivered straight to your inbox.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
@@ -60,35 +80,52 @@ export default function Footer() {
       <div className="border-t border-gray-200">
         <div className="px-[5%] py-12 md:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-
             {/* Brand Section */}
             <div className="lg:col-span-1">
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text text-transparent mb-4 italic">
-                Cosmetica
-              </h2>
+              <Link href="/" className="flex-shrink-0 mb-3">
+                <Image
+                  src={footerLogo}
+                  alt="Footer Logo"
+                  width={256}
+                  height={50}
+                  className="w-64 h-auto"
+                  priority
+                />
+              </Link>
               <p className="text-sm text-gray-600 leading-relaxed mb-6">
-                Discover elegance and self-care with our exclusive collection of premium beauty products.
+                Discover elegance and self-care with our exclusive collection of
+                premium beauty products.
               </p>
-              
+
               {/* Social Media */}
               <div className="flex gap-3">
-                <a 
-                  href="#" 
+                <a
+                  href={data.facebook_url || "#"}
                   className="group p-3 rounded-full bg-pink-100 text-pink-600 hover:bg-gradient-to-r hover:from-pink-500 hover:to-rose-600 hover:text-white transition-all duration-300 hover:scale-110"
+                  target="_blank"
                 >
                   <Facebook className="w-4 h-4" />
                 </a>
-                <a 
-                  href="#" 
+                <a
+                  href={data.instagram_url || "#"}
                   className="group p-3 rounded-full bg-pink-100 text-pink-600 hover:bg-gradient-to-r hover:from-pink-500 hover:to-rose-600 hover:text-white transition-all duration-300 hover:scale-110"
+                  target="_blank"
                 >
-                  <Instagram className="w-4 h-4" />
+                  <InstagramIcon className="w-4 h-4" />
                 </a>
-                <a 
-                  href="#" 
+                <a
+                  href={data.twitter_url || "#"}
                   className="group p-3 rounded-full bg-pink-100 text-pink-600 hover:bg-gradient-to-r hover:from-pink-500 hover:to-rose-600 hover:text-white transition-all duration-300 hover:scale-110"
+                  target="_blank"
                 >
                   <Twitter className="w-4 h-4" />
+                </a>
+                <a
+                  href={data.youtube_url || "#"}
+                  className="group p-3 rounded-full bg-pink-100 text-pink-600 hover:bg-gradient-to-r hover:from-pink-500 hover:to-rose-600 hover:text-white transition-all duration-300 hover:scale-110"
+                  target="_blank"
+                >
+                  <Youtube className="w-4 h-4" />
                 </a>
               </div>
             </div>
@@ -101,27 +138,42 @@ export default function Footer() {
               </h3>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Help Centre
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Delivery Information
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Return Policy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Voucher Codes
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Contact Us
                   </a>
                 </li>
@@ -136,27 +188,42 @@ export default function Footer() {
               </h3>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     About Us
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Corporate Information
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Privacy & Cookies
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Terms & Conditions
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300">
+                  <a
+                    href="#"
+                    className="text-gray-600 hover:text-pink-600 hover:translate-x-1 inline-block transition-all duration-300"
+                  >
                     Copyright & Warranties
                   </a>
                 </li>
@@ -169,26 +236,32 @@ export default function Footer() {
                 Get In Touch
                 <span className="absolute -bottom-2 left-0 w-12 h-1 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full"></span>
               </h3>
-              
+
               <ul className="space-y-4 text-sm">
                 <li className="flex items-start gap-3 text-gray-600">
                   <MapPin className="w-5 h-5 text-pink-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p>324 King St. Owosso</p>
-                    <p className="mt-1">281 Virginia Ave. Westwood</p>
+                    {data?.address || "123 Beauty St., Glamour City, PC 45678"}
                   </div>
                 </li>
                 <li className="flex items-center gap-3 text-gray-600">
                   <Phone className="w-5 h-5 text-pink-600 flex-shrink-0" />
                   <div>
-                    <p>+0.888.456.668</p>
-                    <p className="text-xs text-gray-500 mt-0.5">(+0122.33.44.55)</p>
+                    <p>{data?.business_phone || "+0.888.456.668"}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      (+0122.33.44.55)
+                    </p>
                   </div>
                 </li>
                 <li className="flex items-center gap-3 text-gray-600">
                   <Mail className="w-5 h-5 text-pink-600 flex-shrink-0" />
-                  <a href="mailto:support@cosmetica.com" className="hover:text-pink-600 transition-colors">
-                    support@cosmetica.com
+                  <a
+                    href={`mailto:${
+                      data?.business_email || "support@cosmetica.com"
+                    }`}
+                    className="hover:text-pink-600 transition-colors"
+                  >
+                    {data?.business_email || "support@cosmetica.com"}
                   </a>
                 </li>
               </ul>
@@ -202,12 +275,20 @@ export default function Footer() {
         <div className="px-[5%] py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-600">
             <p>
-              © {new Date().getFullYear()} <span className="font-semibold text-pink-600">Cosmetica</span>. All rights reserved.
+              © {new Date().getFullYear()}{" "}
+              <span className="font-semibold text-pink-600">Cosmetica</span>.
+              All rights reserved.
             </p>
             <div className="flex items-center gap-6">
-              <a href="#" className="hover:text-pink-600 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-pink-600 transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-pink-600 transition-colors">Sitemap</a>
+              <a href="#" className="hover:text-pink-600 transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-pink-600 transition-colors">
+                Terms of Service
+              </a>
+              <a href="#" className="hover:text-pink-600 transition-colors">
+                Sitemap
+              </a>
             </div>
           </div>
         </div>

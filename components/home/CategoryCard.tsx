@@ -1,11 +1,6 @@
+import { Category } from '@/types';
 import React from 'react';
 
-// Define the shape of the category object
-interface Category {
-  img: string;
-  label: string;
-  qty: string | number;
-}
 
 // Define the props for the component
 interface CategoryCardProps {
@@ -15,26 +10,23 @@ interface CategoryCardProps {
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ category, className = '' }) => {
   return (
-    <div className={`group rounded-xl overflow-clip scroll-fade-up ${className}`}>
+    <div className={`group rounded-xl overflow-clip scroll-fade-up cursor-pointer ${className}`}>
       {/* Image Container */}
       <div className="h-[250px] overflow-clip">
         {/* Using standard <img> tag for direct compatibility. 
           For better performance in Next.js, consider using <Image fill ... /> 
         */}
         <img
-          src={category.img}
-          alt={category.label}
+          src={category.image}
+          alt={category.name}
           className="w-full h-full object-cover aspect-auto group-hover:scale-110 duration-500"
         />
       </div>
 
       {/* Text Content */}
       <div className="p-5 bg-gray-50 text-center font-semibold group-hover:bg-[#ec6b81] space-y-1 duration-500">
-        <p className="text-sm text-gray-600 group-hover:text-gray-100 capitalize">
-          {category.qty} products
-        </p>
-        <p className="text-2xl group-hover:text-white capitalize">
-          {category.label}
+        <p className="text-xl group-hover:text-white capitalize min-h-14">
+          {category.name}
         </p>
       </div>
     </div>

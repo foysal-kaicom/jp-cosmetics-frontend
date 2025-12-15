@@ -12,60 +12,18 @@ import {
 } from "lucide-react";
 import WebPageWrapper from "../WebPageWrapper";
 import Link from "next/link";
+import { Category, HeroSlider } from "@/types";
 
-export default function HomeHero() {
+export default function HomeHero({
+  heroSliders, popularCategories
+}: {
+  heroSliders: HeroSlider[];
+  popularCategories: Category[];
+}) {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const sliderInstance = useRef<KeenSliderInstance | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
-
-  const heroData = {
-    slides: [
-      {
-        image: "/assets/img/home/hero1.webp",
-        title: "Glow Like Never Before",
-        subtitle: "New Arrivals",
-        description:
-          "Discover our new skincare range designed to refresh, hydrate, and give you a natural glow.",
-        badge: "NEW COLLECTION",
-        cta: "Explore Now",
-      },
-      {
-        image: "/assets/img/home/hero2.png",
-        title: "Luxury Redefined",
-        subtitle: "Premium Selection",
-        description:
-          "Indulge in premium cosmetics crafted with care for flawless beauty every day.",
-        badge: "BEST SELLERS",
-        cta: "Shop Collection",
-      },
-      {
-        image: "/assets/img/home/hero3.png",
-        title: "Confidence in Every Shade",
-        subtitle: "Bold & Beautiful",
-        description:
-          "Explore our exclusive lipstick collection – bold colors for bold women.",
-        badge: "TRENDING NOW",
-        cta: "Discover More",
-      },
-    ],
-    rightImages: [
-      {
-        image: "/assets/img/home/hero2.png",
-        title: "Summer Essentials",
-        subtitle: "Up to 30% Off",
-        link: "/collection/summer",
-      },
-      {
-        image: "/assets/img/home/hero3.png",
-        title: "Gift Sets",
-        subtitle: "Perfect for Any Occasion",
-        link: "/collection/gifts",
-      },
-    ],
-  };
-
-  const { slides, rightImages } = heroData;
 
   useEffect(() => {
     let timeout: any; // Move these to the top
@@ -83,7 +41,7 @@ export default function HomeHero() {
     if (sliderRef.current) {
       sliderInstance.current = new KeenSlider(sliderRef.current, {
         loop: true,
-        duration: 1200,
+        // duration: 1200,
         drag: true,
         slides: { perView: 1 },
         slideChanged(slider) {
@@ -118,7 +76,7 @@ export default function HomeHero() {
         {/* LEFT MAIN SLIDER */}
         <div className="relative lg:w-2/3 h-[500px] lg:h-[680px] rounded-2xl overflow-hidden shadow-2xl group">
           <div ref={sliderRef} className="keen-slider h-full">
-            {slides.map((slide, index) => (
+            {heroSliders.map((slide, index) => (
               <div key={index} className="keen-slider__slide relative">
                 {/* Background Image with Ken Burns Effect */}
                 <div className="absolute inset-0 overflow-hidden">
@@ -138,13 +96,8 @@ export default function HomeHero() {
                   {/* Badge */}
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full text-xs font-bold uppercase tracking-wider w-fit shadow-lg backdrop-blur-sm animate-in fade-in slide-in-from-left-4 duration-500">
                     <Sparkles className="w-4 h-4" />
-                    {slide.badge}
+                    {slide.label}
                   </div>
-
-                  {/* Subtitle */}
-                  <p className="text-pink-300 font-medium text-sm md:text-base uppercase tracking-wide animate-in fade-in slide-in-from-left-4 duration-700">
-                    {slide.subtitle}
-                  </p>
 
                   {/* Title */}
                   <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight max-w-2xl drop-shadow-2xl animate-in fade-in slide-in-from-left-4 duration-1000">
@@ -153,21 +106,23 @@ export default function HomeHero() {
 
                   {/* Description */}
                   <p className="max-w-xl text-base md:text-lg lg:text-xl text-gray-200 leading-relaxed animate-in fade-in slide-in-from-left-4 duration-1200">
-                    {slide.description}
+                    {slide.short_description}
                   </p>
 
                   {/* CTA Button */}
-                  <div className="animate-in fade-in slide-in-from-left-4 duration-1500">
-                    <Link href="/shop">
-                      <button className="group/btn relative overflow-hidden px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full font-bold text-white shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-3">
-                        <span className="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-700 translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500" />
-                        <span className="relative z-10 flex items-center gap-3">
-                          <ShoppingBag className="w-5 h-5" />
-                          {slide.cta}
-                        </span>
-                      </button>
-                    </Link>
-                  </div>
+                  {slide.url && (
+                    <div className="animate-in fade-in slide-in-from-left-4 duration-1500">
+                      <Link href={slide.url}>
+                        <button className="group/btn relative overflow-hidden px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-600 rounded-full font-bold text-white shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-3 cursor-pointer">
+                          <span className="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-700 translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500" />
+                          <span className="relative z-10 flex items-center gap-3">
+                            <ShoppingBag className="w-5 h-5" />
+                            Visit
+                          </span>
+                        </button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
 
                 {/* Decorative Elements */}
@@ -181,14 +136,14 @@ export default function HomeHero() {
             <>
               <button
                 onClick={() => sliderInstance.current?.prev()}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 cursor-pointer"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
                 onClick={() => sliderInstance.current?.next()}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 cursor-pointer"
                 aria-label="Next slide"
               >
                 <ChevronRight className="w-6 h-6" />
@@ -199,7 +154,7 @@ export default function HomeHero() {
           {/* Slide Indicators */}
           {loaded && sliderInstance.current && (
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-              {slides.map((_, idx) => (
+              {heroSliders.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => sliderInstance.current?.moveToIdx(idx)}
@@ -217,50 +172,43 @@ export default function HomeHero() {
 
         {/* RIGHT SIDE FEATURE CARDS */}
         <div className="flex flex-row lg:flex-col gap-4 lg:gap-6 lg:w-1/3 h-auto lg:h-[680px]">
-          {rightImages.map((item, i) => (
+          {popularCategories.map((item, i) => (
             <Link
               key={i}
-              href={item.link}
+              href={`/category/${item.slug}`}
               className="relative flex-1 lg:h-1/2 rounded-2xl overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
             >
-              {/* Background Image */}
               <div className="absolute inset-0">
                 <img
                   src={item.image}
-                  alt={item.title}
+                  alt={item.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
               </div>
 
-              {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:from-black/70" />
 
-              {/* Content */}
               <div className="relative h-full flex flex-col justify-end p-6 text-white">
-                {/* Badge */}
+     
                 <div className="inline-flex items-center gap-1.5 mb-3 px-3 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold uppercase w-fit opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <TrendingUp className="w-3 h-3" />
                   Popular
                 </div>
 
-                {/* Title */}
                 <h3 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-pink-300 transition-colors">
-                  {item.title}
+                  {item.name}
                 </h3>
 
-                {/* Subtitle */}
                 <p className="text-sm text-gray-200 mb-3 opacity-90">
-                  {item.subtitle}
+                  {item.description}
                 </p>
 
-                {/* CTA */}
                 <div className="flex items-center gap-2 text-sm font-semibold group-hover:gap-3 transition-all">
                   Shop Now
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
 
-              {/* Decorative Corner */}
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-pink-500/30 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Link>
           ))}

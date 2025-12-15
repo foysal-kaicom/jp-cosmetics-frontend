@@ -4,12 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
+import { BusinessInfo, NavItem } from "@/types";
+import Image from "next/image";
 
-interface NavItem {
-  id: string;
-  label: string;
-  link: string;
-}
 
 const navdata: NavItem[] = [
   { id: "home", label: "Home", link: "/" },
@@ -18,10 +15,16 @@ const navdata: NavItem[] = [
   { id: "blog", label: "Blog", link: "/blog" },
 ];
 
-export default function Header() {
+interface HeaderProps {
+  data: BusinessInfo;
+}
+
+export default function Header({ data }: HeaderProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const headerLogo = data.header_logo || "/assets/img/jp-cosmetica-logo.png";
 
   return (
     <>
@@ -49,9 +52,7 @@ export default function Header() {
 
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text text-transparent hover:from-pink-600 hover:to-rose-700 transition-all duration-300 italic tracking-tight">
-                Cosmetica
-              </h2>
+              <Image src={headerLogo} alt="Header Logo" width={256} height={50} className="w-32 h-auto" />
             </Link>
 
             {/* Desktop Navigation */}

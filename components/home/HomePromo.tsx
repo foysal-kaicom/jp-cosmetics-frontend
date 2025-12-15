@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import WebPageWrapper from "../WebPageWrapper";
+import { FooterSlider } from "@/types";
+import Image from "next/image";
 
-const HomePromo = () => {
+const HomePromo = ({ footerSliders }: { footerSliders: FooterSlider[] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
@@ -48,12 +50,14 @@ const HomePromo = () => {
 
         {/* Slider Container */}
         <div ref={sliderRef} className="keen-slider scroll-fade-up">
-          {[...Array(3)].map((_, index) => (
+          {footerSliders.map((slider, index) => (
             <div key={index} className="keen-slider__slide">
-              <img
-                src="/assets/img/promo/p1.jpg"
+              <Image
+                src={slider.image}
                 alt="Promo Banner"
                 className="h-[250px] w-full object-cover aspect-auto rounded-lg" // Added rounded-lg for better aesthetics
+                width={1000}
+                height={250}
               />
             </div>
           ))}

@@ -6,48 +6,12 @@ import "keen-slider/keen-slider.min.css";
 import CategoryCard from "./CategoryCard";
 import Headline from "../Headline";
 import WebPageWrapper from "../WebPageWrapper";
+import { Category } from "@/types";
 
-// TypeScript Interfaces
-interface Category {
-  img: string;
-  label: string;
-  qty: string;
-}
-
-// Updated data with '/assets' prepended to original paths
-const categories: Category[] = [
-  {
-    img: "/assets/img/cat/cat1.png",
-    label: "skin care",
-    qty: "13",
-  },
-  {
-    img: "/assets/img/cat/cat2.png",
-    label: "health care",
-    qty: "13",
-  },
-  {
-    img: "/assets/img/cat/cat3.png",
-    label: "Makeup Tools",
-    qty: "13",
-  },
-  {
-    img: "/assets/img/cat/cat4.png",
-    label: "Makeup",
-    qty: "13",
-  },
-  {
-    img: "/assets/img/cat/cat3.png",
-    label: "skin care tools",
-    qty: "13",
-  },
-];
-
-const HomeCategory = () => {
+const HomeCategory = ({ popularCategories }: { popularCategories: Category[] }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
-  // Initialize Keen Slider
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     initial: 0,
     slides: {
@@ -60,7 +24,7 @@ const HomeCategory = () => {
     created() {
       setLoaded(true);
     },
-    // Breakpoints for responsiveness
+ 
     breakpoints: {
       "(max-width: 1024px)": {
         slides: { perView: 4, spacing: 12 },
@@ -80,8 +44,8 @@ const HomeCategory = () => {
   return (
     <WebPageWrapper>
       <Headline
-        mainText="Popular Categories"
-        subText="Some of our popular categories include cosmetic"
+        mainText="Our Categories"
+        subText="Some of our popular categories"
         className="mb-10"
       />
 
@@ -111,7 +75,7 @@ const HomeCategory = () => {
 
         {/* Slider Container */}
         <div ref={sliderRef} className="keen-slider scroll-fade-up z-0">
-          {categories.map((category, index) => (
+          {popularCategories.map((category, index) => (
             <div key={index} className="keen-slider__slide h-auto">
               <CategoryCard category={category} className="m-1.5" />
             </div>
@@ -119,27 +83,6 @@ const HomeCategory = () => {
         </div>
       </div>
 
-      {/* Pagination Dots */}
-      {loaded && instanceRef.current && (
-        <div className="flex justify-center py-4 gap-2">
-          {[
-            ...Array(instanceRef.current.track.details.slides.length).keys(),
-          ].map((idx) => {
-            return (
-              <button
-                key={idx}
-                onClick={() => {
-                  instanceRef.current?.moveToIdx(idx);
-                }}
-                className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                  currentSlide === idx ? "bg-black" : "bg-gray-300"
-                }`}
-                aria-label={`Go to slide ${idx + 1}`}
-              ></button>
-            );
-          })}
-        </div>
-      )}
     </WebPageWrapper>
   );
 };
