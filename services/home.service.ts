@@ -70,3 +70,13 @@ export const getTrendingProducts = async (): Promise<Product[]> => {
     return [] as Product[];
   }
 };
+
+export const getPopularProducts = async (): Promise<Product[]> => {
+  try {
+    const response = await apiClient.get("/popular-products"); 
+    return response.data?.data;
+  } catch (error) {
+    console.error("Failed to fetch Popular Products Info", error);
+    return [] as Product[];
+  }
+};
