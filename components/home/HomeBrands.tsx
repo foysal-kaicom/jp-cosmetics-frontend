@@ -1,5 +1,6 @@
 import WebPageWrapper from "../WebPageWrapper";
 import { Brand } from "@/types";
+import Image from "next/image";
 import Link from "next/link";
 
 const HomeBrands = ({ brands }: { brands: Brand[] }) => {
@@ -30,10 +31,12 @@ const HomeBrands = ({ brands }: { brands: Brand[] }) => {
               {/* Logo container */}
               <div className="relative mb-4 w-40 h-40 flex items-center justify-center">
                 <div className="absolute inset-0 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-                <img
+                <Image
                   src={brand.logo}
                   alt={brand.name}
                   className="relative w-full h-auto object-cover group-hover:grayscale-0 transition-all duration-500 group-hover:scale-110"
+                  width={250}
+                  height={250}
                 />
               </div>
               

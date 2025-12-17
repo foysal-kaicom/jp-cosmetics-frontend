@@ -1,5 +1,5 @@
 import apiClient from "@/lib/axios";
-import { Brand, BusinessInfo, Category, FooterSlider, HeroSlider } from "@/types";
+import { Brand, BusinessInfo, Category, FooterSlider, HeroSlider, Product } from "@/types";
 
 export const getBusinessInfo = async (): Promise<BusinessInfo> => {
   try {
@@ -58,5 +58,15 @@ export const getFooterSliders = async (): Promise<FooterSlider[]> => {
   } catch (error) {
     console.error("Failed to fetch Footer Sliders Info", error);
     return [] as FooterSlider[];
+  }
+};
+
+export const getTrendingProducts = async (): Promise<Product[]> => {
+  try {
+    const response = await apiClient.get("/trending-products"); 
+    return response.data?.data;
+  } catch (error) {
+    console.error("Failed to fetch Trending Products Info", error);
+    return [] as Product[];
   }
 };

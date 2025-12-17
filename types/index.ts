@@ -63,3 +63,23 @@ export interface FooterSlider {
     image: string;
     status: number;
 }
+
+export interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  product_type: string;
+  status: string;
+  primary_image: string;
+  category_id: number;
+  brand_id: number;
+  created_at: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  brand: {
+    id: number;
+    name: string;
+  };
+}

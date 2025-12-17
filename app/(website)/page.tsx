@@ -6,7 +6,7 @@ import HomePromo from "@/components/home/HomePromo";
 import HomeReview from "@/components/home/HomeReview";
 import HomeTrending from "@/components/home/HomeTrending";
 import HomeUsp from "@/components/home/HomeUsp";
-import { getBrands, getCategories, getFooterSliders, getHeroSliders, getPopularCategories } from "@/services/home.service";
+import { getBrands, getCategories, getFooterSliders, getHeroSliders, getPopularCategories, getTrendingProducts } from "@/services/home.service";
 
 export default async function Home() {
 
@@ -20,6 +20,8 @@ export default async function Home() {
 
   const footerSliders = await getFooterSliders();
 
+  const trendingProducts = await getTrendingProducts();
+
   return (
     <>
       <div className="space-y-20 pb-10">
@@ -28,7 +30,7 @@ export default async function Home() {
         <HomeCategory popularCategories={categories} />
         <HomeProduct />
         <HomeBrands brands={brands} />
-        <HomeTrending />
+        <HomeTrending products={trendingProducts} />
         <HomeReview />
         <HomePromo footerSliders={footerSliders} />
       </div>

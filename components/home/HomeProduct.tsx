@@ -5,142 +5,104 @@ import { Star, ShoppingCart } from "lucide-react";
 import WebPageWrapper from "../WebPageWrapper";
 import Headline from "../Headline";
 import ProductCard from "./ProductCard";
-
-type Product = {
-  mainImg: string;
-  subImg: string;
-  rate: number;
-  prevprice: number;
-  price: number;
-  label: string;
-  badge: string;
-  discount: string;
-  catId: number;
-};
-
+import { Product } from "@/types";
 export default function HomeProduct() {
-  // 👉 Inline JSON (same structure as Vue)
-  const categories = [
-    { img: "/assets/img/cat/cat1.png", label: "skin care", qty: "13" },
-    { img: "/assets/img/cat/cat2.png", label: "health care", qty: "13" },
-    { img: "/assets/img/cat/cat3.png", label: "Makeup Tools", qty: "13" },
-    { img: "/assets/img/cat/cat4.png", label: "Makeup", qty: "13" },
-    { img: "/assets/img/cat/cat3.png", label: "skin care tools", qty: "13" },
-  ];
-
   const products: Product[] = [
     {
-      mainImg: "/assets/img/product/product2.png",
-      subImg: "/assets/img/product/product1.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 1,
+      id: 1,
+      name: "Test Product",
+      slug: "test-product",
+      product_type: "configurable",
+      status: "active",
+      primary_image: "/assets/img/product/product1.png",
+      category_id: 6,
+      brand_id: 1,
+      created_at: "2025-12-17T04:49:07.000000Z",
+      category: {
+        id: 6,
+        name: "Test Category",
+      },
+      brand: {
+        id: 1,
+        name: "Test Brand",
+      },
     },
-    {
-      mainImg: "/assets/img/product/product3.png",
-      subImg: "/assets/img/product/product4.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 1,
+  {
+    id: 2,
+    name: "Moisturizing Cream",
+    slug: "moisturizing-cream",
+    product_type: "simple",
+    status: "active",
+    primary_image: "/assets/img/product/product3.png",
+    category_id: 6,
+    brand_id: 1,
+    created_at: "2025-12-17T04:49:07.000000Z",
+    category: {
+      id: 6,
+      name: "Test Category",
     },
-    {
-      mainImg: "/assets/img/product/product2.png",
-      subImg: "/assets/img/product/product1.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 1,
+    brand: {
+      id: 1,
+      name: "Test Brand",
     },
-    {
-      mainImg: "/assets/img/product/product2.png",
-      subImg: "/assets/img/product/product1.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 1,
+  },
+  {
+    id: 3,
+    name: "Lip Gloss",
+    slug: "lip-gloss",
+    product_type: "simple",
+    status: "active",
+    primary_image: "/assets/img/product/product4.png",
+    category_id: 6,
+    brand_id: 1,
+    created_at: "2025-12-17T04:49:07.000000Z",
+    category: {
+      id: 6,
+      name: "Test Category",
     },
-
-    {
-      mainImg: "/assets/img/product/product3.png",
-      subImg: "/assets/img/product/product4.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 2,
+    brand: {
+      id: 1,
+      name: "Test Brand",
     },
-    {
-      mainImg: "/assets/img/product/product4.png",
-      subImg: "/assets/img/product/product1.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 2,
+  },
+  {
+    id: 4,
+    name: "Foundation",
+    slug: "foundation",
+    product_type: "configurable",
+    status: "active",
+    primary_image: "/assets/img/product/product1.png",
+    category_id: 6,
+    brand_id: 1,
+    created_at: "2025-12-17T04:49:07.000000Z",
+    category: {
+      id: 6,
+      name: "Test Category",
     },
-    {
-      mainImg: "/assets/img/product/product2.png",
-      subImg: "/assets/img/product/product4.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 2,
+    brand: {
+      id: 1,
+      name: "Test Brand",
     },
-    {
-      mainImg: "/assets/img/product/product2.png",
-      subImg: "/assets/img/product/product3.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "10% off",
-      catId: 2,
+  },
+  {
+    id: 5,
+    name: "Face Serum",
+    slug: "face-serum",
+    product_type: "simple",
+    status: "active",
+    primary_image: "/assets/img/product/product2.png",
+    category_id: 6,
+    brand_id: 1,
+    created_at: "2025-12-17T04:49:07.000000Z",
+    category: {
+      id: 6,
+      name: "Test Category",
     },
-
-    {
-      mainImg: "/assets/img/product/product3.png",
-      subImg: "/assets/img/product/product1.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "40% off",
-      catId: 3,
+    brand: {
+      id: 1,
+      name: "Test Brand",
     },
-    {
-      mainImg: "/assets/img/product/product2.png",
-      subImg: "/assets/img/product/product1.png",
-      rate: 3,
-      prevprice: 60.99,
-      price: 49.99,
-      label: "Luxury Makeup Kit",
-      badge: "new",
-      discount: "40% off",
-      catId: 3,
-    },
+  }
   ];
 
   return (
