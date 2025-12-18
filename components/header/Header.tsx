@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
 import { BusinessInfo, NavItem } from "@/types";
 import Image from "next/image";
-
+import { useCartStore } from "@/store/cart-store";
 
 const navdata: NavItem[] = [
   { id: "home", label: "Home", link: "/" },
@@ -25,7 +25,7 @@ export default function Header({ data }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const headerLogo = data.header_logo || "/assets/img/jp-cosmetica-logo.png";
-
+  const { items } = useCartStore();
   return (
     <>
       {/* Elegant Top Bar with Gradient */}
@@ -49,10 +49,15 @@ export default function Header({ data }: HeaderProps) {
       <div className="sticky top-0 bg-white/95 backdrop-blur-xl shadow-sm z-50 border-b border-gray-100">
         <div className="px-[5%]">
           <div className="flex items-center justify-between py-4 md:py-5 gap-4">
-
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <Image src={headerLogo} alt="Header Logo" width={256} height={50} className="w-32 h-auto" />
+              <Image
+                src={headerLogo}
+                alt="Header Logo"
+                width={256}
+                height={50}
+                className="w-32 h-auto"
+              />
             </Link>
 
             {/* Desktop Navigation */}
@@ -62,16 +67,16 @@ export default function Header({ data }: HeaderProps) {
                   key={item.id}
                   href={item.link}
                   className={`relative py-1 transition-all duration-300 group ${
-                    pathname === item.link 
-                      ? "text-pink-600" 
+                    pathname === item.link
+                      ? "text-pink-600"
                       : "text-gray-700 hover:text-pink-600"
                   }`}
                 >
                   {item.label}
-                  <span 
+                  <span
                     className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-pink-500 to-rose-600 transition-all duration-300 ${
-                      pathname === item.link 
-                        ? "w-full" 
+                      pathname === item.link
+                        ? "w-full"
                         : "w-0 group-hover:w-full"
                     }`}
                   />
@@ -81,7 +86,6 @@ export default function Header({ data }: HeaderProps) {
 
             {/* Desktop Icons */}
             <div className="hidden md:flex items-center gap-4 lg:gap-6">
-              
               {/* Search */}
               <div className="relative">
                 {searchOpen ? (
@@ -93,7 +97,7 @@ export default function Header({ data }: HeaderProps) {
                       autoFocus
                     />
                     <Search className="w-4 h-4 text-pink-600" />
-                    <button 
+                    <button
                       onClick={() => setSearchOpen(false)}
                       className="ml-1"
                     >
@@ -114,7 +118,7 @@ export default function Header({ data }: HeaderProps) {
               </div>
 
               {/* Account */}
-              <Link 
+              <Link
                 href="/user/dashboard"
                 className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group"
               >
@@ -125,7 +129,7 @@ export default function Header({ data }: HeaderProps) {
               </Link>
 
               {/* Wishlist */}
-              <Link 
+              <Link
                 href="/user/wishlist"
                 className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group relative"
               >
@@ -139,7 +143,7 @@ export default function Header({ data }: HeaderProps) {
               </Link>
 
               {/* Cart */}
-              <Link 
+              <Link
                 href="/cart"
                 className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group relative"
               >
@@ -148,7 +152,7 @@ export default function Header({ data }: HeaderProps) {
                 </div>
                 <span className="text-[10px] font-medium">Cart</span>
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                  0
+                  {items?.length ?? 0}
                 </span>
               </Link>
             </div>
@@ -192,19 +196,32 @@ export default function Header({ data }: HeaderProps) {
                   <Search className="w-6 h-6" />
                   <span className="text-xs">Search</span>
                 </button>
-                <Link href="/account" className="flex flex-col items-center gap-2 text-gray-600">
+                <Link
+                  href="/account"
+                  className="flex flex-col items-center gap-2 text-gray-600"
+                >
                   <User className="w-6 h-6" />
                   <span className="text-xs">Account</span>
                 </Link>
-                <Link href="/wishlist" className="flex flex-col items-center gap-2 text-gray-600 relative">
+                <Link
+                  href="/wishlist"
+                  className="flex flex-col items-center gap-2 text-gray-600 relative"
+                >
                   <Heart className="w-6 h-6" />
                   <span className="text-xs">Wishlist</span>
-                  <span className="absolute top-0 right-6 bg-pink-600 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">0</span>
+                  <span className="absolute top-0 right-6 bg-pink-600 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">
+                    0
+                  </span>
                 </Link>
-                <Link href="/cart" className="flex flex-col items-center gap-2 text-gray-600 relative">
+                <Link
+                  href="/cart"
+                  className="flex flex-col items-center gap-2 text-gray-600 relative"
+                >
                   <ShoppingCart className="w-6 h-6" />
                   <span className="text-xs">Cart</span>
-                  <span className="absolute top-0 right-6 bg-pink-600 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">0</span>
+                  <span className="absolute top-0 right-6 bg-pink-600 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">
+                    0
+                  </span>
                 </Link>
               </div>
             </div>
