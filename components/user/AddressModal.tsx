@@ -1,30 +1,43 @@
 import { X, MapPin, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { useState ,useEffect  } from "react";
 
-interface Address {
-  title: string;
-  name: string;
-  address: string;
-  phone: string;
-  isDefault: boolean;
-}
+import { useAuthStore } from "@/store/authStore";
+
+import type { AddressPayload , Address } from "@/types/user";
 
 interface AddressModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: Address) => void;
+  onSave: (data: AddressPayload) => void;
   address?: Address | null;
 }
 
 // Address Form Modal Component
 export function AddressModal({ isOpen, onClose, onSave, address = null }: AddressModalProps) {
-  const [formData, setFormData] = useState({
+  const user = useAuthStore().user
+  const [formData, setFormData] = useState<AddressPayload>({
     title: address?.title || "",
     name: address?.name || "",
     address: address?.address || "",
-    phone: address?.phone || "",
-    isDefault: address?.isDefault || false
+    phone: address?.phone || user?.phone || "" ,
+    city:address?.city || "",
+    area:address?.area || '',
+    is_default: address?.is_default ? 1 : 0,
+    status:1,
   });
+
+useEffect(() => {
+  setFormData({
+    title: address?.title || "",
+    name: address?.name || "",
+    address: address?.address || "",
+    phone: address?.phone || user?.phone || "",
+    city: address?.city || "",
+    area: address?.area || "",
+    is_default: address?.is_default ? 1 : 0,
+    status: address?.status || 1,
+  });
+}, [address, user?.phone]);
 
   if (!isOpen) return null;
 
@@ -72,7 +85,7 @@ export function AddressModal({ isOpen, onClose, onSave, address = null }: Addres
             <input
               type="text"
               name="title"
-              value={formData.title}
+              value={formData.title || ""}
               onChange={handleChange}
               placeholder="e.g., Home, Office, etc."
               className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
@@ -87,7 +100,7 @@ export function AddressModal({ isOpen, onClose, onSave, address = null }: Addres
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={formData.name || ""}
               onChange={handleChange}
               placeholder="Enter your full name"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
@@ -101,13 +114,40 @@ export function AddressModal({ isOpen, onClose, onSave, address = null }: Addres
             </label>
             <textarea
               name="address"
-              value={formData.address}
+              value={formData.address || ""}
               onChange={handleChange}
               placeholder="Enter complete address"
               rows={3}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Area
+            </label>
+            <input
+              type="text"
+              name="area"
+              value={formData.area || ""}
+              onChange={handleChange}
+              placeholder="Enter your Area"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            />
+          </div><div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              City
+            </label>
+            <input
+              type="text"
+              name="city"
+              value={formData.city || ""}
+              onChange={handleChange}
+              placeholder="Enter your City"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            />
+          </div>
+          
 
           {/* Phone */}
           <div>
@@ -117,7 +157,7 @@ export function AddressModal({ isOpen, onClose, onSave, address = null }: Addres
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
+              value={formData.phone || ""}
               onChange={handleChange}
               placeholder="+1 888-456-668"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
@@ -128,13 +168,13 @@ export function AddressModal({ isOpen, onClose, onSave, address = null }: Addres
           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
             <input
               type="checkbox"
-              name="isDefault"
-              id="isDefault"
-              checked={formData.isDefault}
+              name="is_default"
+              id="is_default"
+              checked={formData.is_default == 1} 
               onChange={handleChange}
               className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
             />
-            <label htmlFor="isDefault" className="text-sm font-medium text-gray-700 cursor-pointer">
+            <label htmlFor="is_default" className="text-sm font-medium text-gray-700 cursor-pointer">
               Set as default address
             </label>
           </div>

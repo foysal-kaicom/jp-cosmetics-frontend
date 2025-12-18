@@ -1,19 +1,42 @@
-import { 
-  Package, 
+"use client";
+
+import {
+  Package,
   Heart,
   ShoppingBag,
   Bell,
   Gift,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import StatCard from "./StatCard";
 import OrderCard from "./OrderCard";
 import QuickActionCard from "./QuickActionCard";
+import { useEffect, useState } from "react";
+
+import { orderService } from "@/services/user.service";
+import type { Order } from "@/types/user";
 
 export default function DashboardComponent() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await orderService.list();
+        setOrders(data);
+      } catch (error) {
+        console.error("Failed to fetch orders", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
     <div className="space-y-6">
-      
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -57,30 +80,12 @@ export default function DashboardComponent() {
         </div>
 
         <div className="space-y-4">
-          <OrderCard
-            orderId="#ORD-2024-1234"
-            date="Dec 8, 2024"
-            status="Delivered"
-            total="$89.99"
-            items={2}
-            statusColor="green"
-          />
-          <OrderCard
-            orderId="#ORD-2024-1233"
-            date="Dec 5, 2024"
-            status="In Transit"
-            total="$124.50"
-            items={3}
-            statusColor="blue"
-          />
-          <OrderCard
-            orderId="#ORD-2024-1232"
-            date="Nov 28, 2024"
-            status="Delivered"
-            total="$67.00"
-            items={1}
-            statusColor="green"
-          />
+          {orders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+            />
+          ))}
         </div>
       </div>
 
