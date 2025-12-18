@@ -29,8 +29,7 @@ const Signup = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [subscribeNewsletter, setSubscribeNewsletter] = useState(true);
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
+    name: '',
     email: '',
     phone: '',
     password: '',
@@ -157,18 +156,18 @@ const Signup = () => {
               <form onSubmit={handleSubmit} className="space-y-5">
                 
                 {/* Personal Info Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label htmlFor="first_name" className="block text-sm font-semibold text-gray-900 mb-2">
-                      First Name *
+                    <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-2">
+                      Name *
                     </label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         type="text"
-                        id="first_name"
-                        name="first_name"
-                        value={formData.first_name}
+                        id="name"
+                        name="name"
+                        value={formData.name}
                         onChange={handleChange}
                         required
                         className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
@@ -177,7 +176,7 @@ const Signup = () => {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label htmlFor="last_name" className="block text-sm font-semibold text-gray-900 mb-2">
                       Last Name *
                     </label>
@@ -194,7 +193,7 @@ const Signup = () => {
                         placeholder="Doe"
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div>

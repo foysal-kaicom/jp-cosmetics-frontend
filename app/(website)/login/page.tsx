@@ -27,14 +27,10 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
-    name: "",
-    phone: "",
   });
 
   const login = useAuthStore((s) => s.login);
   const router = useRouter();
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -45,9 +41,13 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    await login(formData);
-    router.push("/account");
+    try {
+      await login(formData.email, formData.password);
+      router.push("/user/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert("Invalid email or password");
+    }
   };
 
   const benefits = [
@@ -235,8 +235,7 @@ const Login = () => {
 
             {/* Switch Mode */}
             <p className="text-center text-sm text-gray-600 mt-6">
-              Don't have an account?
-              {" "}
+              Don't have an account?{" "}
               <Link href="/signup">
                 <button className="font-semibold text-pink-600 hover:text-pink-700 cursor-pointer">
                   Sign Up

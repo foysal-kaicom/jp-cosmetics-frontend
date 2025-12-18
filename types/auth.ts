@@ -10,10 +10,16 @@ export type LoginPayload = {
   password: string;
 };
 
-export type LoginResponse = {
-  token: string;
-  user: User;
+export type LoginApiResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    token: string;
+    token_type: "bearer";
+    customer: User;
+  };
 };
+
 
 export type AuthState = {
   user: User | null;
@@ -22,4 +28,6 @@ export type AuthState = {
   hydrate: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  setUser: (user: User | null) => void;
 };
+

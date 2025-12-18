@@ -1,17 +1,24 @@
 import apiClient from "@/lib/axios";
 import type {
   LoginPayload,
-  LoginResponse,
+  LoginApiResponse,
   User,
 } from "@/types/auth";
 
 export const authService = {
-  async login(payload: LoginPayload): Promise<LoginResponse> {
-    const { data } = await apiClient.post<LoginResponse>(
+  async login(payload: LoginPayload): Promise<{
+    token: string;
+    user: User;
+  }> {
+    const { data } = await apiClient.post<LoginApiResponse>(
       "/login",
       payload
     );
-    return data;
+
+    return {
+      token: data.data.token,
+      user: data.data.customer,
+    };
   },
 
   async me(): Promise<User> {

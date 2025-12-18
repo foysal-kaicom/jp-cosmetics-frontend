@@ -1,68 +1,127 @@
-import OrderCard from "@/components/user/OrderCard";
-import { CheckCircle } from "lucide-react";
+"use client";
 
-interface Order {
-  id: string;
-  orderNumber: string;
-  placedDate: string;
-  status: "delivered" | "pending" | "cancelled";
-  items: OrderItem[];
-  total: number;
-}
+import { useEffect, useState } from "react";
+import { orderService } from "@/services/user.service";
+import type { Order } from "@/types/user";
 
-interface OrderItem {
-  name: string;
-  count: number;
-}
+import { CheckCircle, HandCoins, X } from "lucide-react";
+
+import { formatDate } from "@/utils/formatDate";
+
+import { OrderDetailsModal } from "@/components/user/OrderDetailsModal";
+
+const statusColors: Record<string, string> = {
+  pending: "bg-yellow-100 text-yellow-800",
+  processing: "bg-yellow-100 text-yellow-800",
+  confirm: "bg-blue-100 text-blue-800",
+  dispatched: "bg-purple-100 text-purple-800",
+  delivered: "bg-green-100 text-green-800",
+  cancelled: "bg-red-100 text-red-800",
+  cancel: "bg-red-100 text-red-800",
+  failed: "bg-red-100 text-red-800",
+  returned: "bg-pink-100 text-pink-800",
+  refunded: "bg-pink-100 text-pink-800",
+  success: "bg-teal-100 text-teal-800",
+};
 
 export default function OrdersSection() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedOrderId, setSelectedOrderid] = useState<number | null>(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await orderService.list();
+        setOrders(data);
+      } catch (error) {
+        console.error("Failed to fetch orders", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  if (loading) return <div>Loading orders...</div>;
+
+  if (!orders.length)
+    return (
+      <div className="size-full flex justify-center items-center text-gray-500 text-lg">
+        No orders found
+      </div>
+    );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
+    <>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
 
-      <div className="space-y-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow"
-          >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-              <div>
-                <h3 className="font-bold text-gray-900">
-                  Order #ORD-2024-123{i}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Placed on Dec {10 - i}, 2024
-                </p>
+        <div className="space-y-4">
+          {orders.map((order) => (
+            <div
+              key={order.id}
+              className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="font-bold text-gray-900">
+                    Order #{order.order_number}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Placed on {formatDate(order.created_at)}
+                  </p>
+                  <h3 className="font-bold text-gray-900 mt-1">
+                    Total : {order.payable_total}
+                  </h3>
+                </div>
               </div>
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-semibold w-fit">
-                <CheckCircle className="w-4 h-4" />
-                Delivered
-              </span>
-            </div>
 
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-pink-100 rounded-lg"></div>
-              <div className="flex-1">
-                <p className="font-semibold text-gray-900">
-                  Luxury Face Serum + 1 more item
-                </p>
-                <p className="text-sm text-gray-600">Total: $89.99</p>
+              <div className="flex items-center gap-4 mb-4">
+                <span
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold w-fit ${
+                    statusColors[order.payment_status] ||
+                    "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  <HandCoins className="w-4 h-4" />
+                  {order?.payment_status}
+                </span>
+                <span
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold w-fit ${
+                    statusColors[order.status] || "bg-gray-100 text-gray-800"
+                  } `}
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  {order?.status}
+                </span>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedOrderid(order.id);
+                    setShowOrderModal(true);
+                  }}
+                  className="flex-1 px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-xl font-semibold hover:bg-pink-50 transition-colors cursor-pointer"
+                >
+                  View Details
+                </button>
+                <button className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer">
+                  Reorder
+                </button>
               </div>
             </div>
-
-            <div className="flex gap-3">
-              <button className="flex-1 px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-xl font-semibold hover:bg-pink-50 transition-colors cursor-pointer">
-                View Details
-              </button>
-              <button className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer">
-                Reorder
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+      <OrderDetailsModal
+        isOpen={showOrderModal}
+        onClose={() => setShowOrderModal(false)}
+        selectedOrderId={selectedOrderId}
+      />
+    </>
   );
 }
