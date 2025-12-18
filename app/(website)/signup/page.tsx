@@ -8,13 +8,8 @@ import {
   EyeOff,
   User,
   Phone,
-  MapPin,
-  Calendar,
   CheckCircle,
   AlertCircle,
-  Facebook,
-  Chrome,
-  Apple,
   ShieldCheck,
   Sparkles,
   Gift,
@@ -22,7 +17,11 @@ import {
   Crown,
   Heart
 } from 'lucide-react';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import apiClient from '@/lib/axios';
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,8 +29,7 @@ const Signup = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [subscribeNewsletter, setSubscribeNewsletter] = useState(true);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     phone: '',
     password: '',
@@ -42,6 +40,8 @@ const Signup = () => {
     score: 0,
     feedback: ''
   });
+
+  const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -75,10 +75,16 @@ const Signup = () => {
     setPasswordStrength({ score, feedback });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    // Handle actual signup
+    try {
+    const res = await apiClient.post("/register", formData);
+    router.push("/login");
+  } catch (err) {
+    console.error(err);
+    alert("Invalid credentials");
+  }
   };
 
   const benefits = [
@@ -150,18 +156,18 @@ const Signup = () => {
               <form onSubmit={handleSubmit} className="space-y-5">
                 
                 {/* Personal Info Fields */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label htmlFor="firstName" className="block text-sm font-semibold text-gray-900 mb-2">
-                      First Name *
+                    <label htmlFor="name" className="block text-sm font-semibold text-gray-900 mb-2">
+                      Name *
                     </label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         type="text"
-                        id="firstName"
-                        name="firstName"
-                        value={formData.firstName}
+                        id="name"
+                        name="name"
+                        value={formData.name}
                         onChange={handleChange}
                         required
                         className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
@@ -170,24 +176,24 @@ const Signup = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="lastName" className="block text-sm font-semibold text-gray-900 mb-2">
+                  {/* <div>
+                    <label htmlFor="last_name" className="block text-sm font-semibold text-gray-900 mb-2">
                       Last Name *
                     </label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
                         type="text"
-                        id="lastName"
-                        name="lastName"
-                        value={formData.lastName}
+                        id="last_name"
+                        name="last_name"
+                        value={formData.last_name}
                         onChange={handleChange}
                         required
                         className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
                         placeholder="Doe"
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div>

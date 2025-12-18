@@ -1,6 +1,13 @@
 import { Edit2 } from "lucide-react";
 
-function SettingItem({ title, description, danger }: any) {
+type Props = {
+  title: string;
+  description: string;
+  danger?: boolean;
+  onClick?: () => void;
+};
+
+function SettingItem({ title, description, danger ,onClick }: Props) {
     return (
         <div className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
             <div>
@@ -9,7 +16,7 @@ function SettingItem({ title, description, danger }: any) {
                 </h3>
                 <p className="text-sm text-gray-600">{description}</p>
             </div>
-            <button className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
+            <button onClick={onClick} className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
                 danger 
                     ? 'text-red-600 hover:bg-red-50' 
                     : 'text-pink-600 hover:bg-pink-50'

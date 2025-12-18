@@ -1,30 +1,75 @@
 "use client";
+
+import { useState, useEffect } from "react";
+
+import { useAuthStore } from "@/store/authStore";
+
 import AddressCard from "@/components/user/AddressCard";
 import { AddressModal } from "@/components/user/AddressModal";
 import { ConfirmDeleteModal } from "@/components/user/ConfirmDeleteModal";
-import { useState } from "react";
+
+import { addressService } from "@/services/user.service";
+import type { Address, AddressPayload } from "@/types/user";
 
 function AddressesSection() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [address, setAddress] = useState<Address[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSaveAddress = (data : any) => {
+  const user = useAuthStore().user;
+
+  const handleSaveAddress = async (data: AddressPayload) => {
     console.log("Saved address:", data);
+
+    try {
+      if (showAddModal) {
+        const res = await addressService.create(data);
+      } else {
+        if (!selectedAddress) return;
+        const res = await addressService.update(selectedAddress.id, data);
+      }
+      fetchAddress();
+    } catch (error) {
+      console.error(
+        `Failed to ${showAddModal ? "add " : "update"} address`,
+        error
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteAddress = () => {
     console.log("Deleted address");
   };
 
-  const editAddress = {
-    title: "Home",
-    name: "Sarah Johnson",
-    address: "324 King St. Owosso, MI 48867",
-    phone: "+1 888-456-668",
-    isDefault: true,
+  const fetchAddress = async () => {
+    try {
+      const data = await addressService.list();
+      setAddress(data);
+    } catch (error) {
+      console.error("Failed to fetch orders", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchAddress();
+  }, []);
+
+  if (loading) return <div>Loading address...</div>;
+
+  if (!address.length)
+    return (
+      <div className="size-full flex justify-center items-center text-gray-500 text-lg">
+        No address found
+      </div>
+    );
+
   return (
     <>
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -39,23 +84,23 @@ function AddressesSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <AddressCard
-          title="Home"
-          name="Sarah Johnson"
-          address="324 King St. Owosso, MI 48867"
-          phone="+1 888-456-668"
-          isDefault
-          onEdit={() => setShowEditModal(true)}
-          onRemove={() => setShowDeleteModal(true)}
-        />
-        <AddressCard
-          title="Office"
-          name="Sarah Johnson"
-          address="281 Virginia Ave. Westwood, NJ 07675"
-          phone="+1 888-456-668"
-          onEdit={() => setShowEditModal(true)}
-          onRemove={() => setShowDeleteModal(true)}
-        />
+          {address.map((item) => (
+            <AddressCard
+              key={item.id}
+              title={item.title}
+              name={user?.name}
+              address={item.address}
+              area={item.area}
+              city={item.city}
+              phone={item.phone || user?.phone}
+              isDefault={item.is_default}
+              onEdit={() => {
+                setSelectedAddress(item);
+                setShowEditModal(true);
+              }}
+              onRemove={() => setShowDeleteModal(true)}
+            />
+          ))}
         </div>
       </div>
       {/* Modals */}
