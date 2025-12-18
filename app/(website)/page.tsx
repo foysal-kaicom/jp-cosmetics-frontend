@@ -28,7 +28,7 @@ export default async function Home() {
         <HomeHero heroSliders={heroSliders} popularCategories={popularCategories} />
         <HomeUsp />
         <HomeCategory popularCategories={categories} />
-        <HomeProduct />
+        <HomeProduct products={trendingProducts} />
         <HomeBrands brands={brands} />
         <HomeTrending products={trendingProducts} />
         <HomeReview />

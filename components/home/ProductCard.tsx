@@ -11,21 +11,45 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({
   product = {
     id: 1,
-    name: "Test Product",
-    slug: "test-product",
+    name: "Vaseline Intensive Care Cocoa Glow Lotion",
+    slug: "35289-vaseline-intensive-care-cocoa-glow-lotion",
     product_type: "configurable",
     status: "active",
-    primary_image: "/assets/img/product/product2.png",
-    category_id: 6,
-    brand_id: 1,
-    created_at: "2025-12-17T04:49:07.000000Z",
+    short_description: null,
+    long_description: null,
+    ingredients: null,
+    how_to_use: null,
+    primary_image:
+      "http://127.0.0.1:8000/product_images/1765946947_sku-11589-1.jpg",
     category: {
       id: 6,
-      name: "Test Category",
+      name: "Beauty Tools & Accessories",
+      slug: "72350-beauty-tools-accessories",
     },
     brand: {
       id: 1,
-      name: "Test Brand",
+      name: "Aura",
+      slug: "aura",
+    },
+    created_at: "2025-12-17",
+    default_attribute: {
+      id: 1,
+      product_id: 1,
+      attribute_name: "Size",
+      attribute_value: "200ml",
+      unit_price: "795.00",
+      stock: 20,
+      min_order: 1,
+      max_order: 5,
+      discount_type: "percentage",
+      discount_amount: "18.00",
+      status: 1,
+      is_default: 1,
+      created_at: "2025-12-17T04:49:07.000000Z",
+      updated_at: "2025-12-17T04:49:07.000000Z",
+      discounted_price: 651.9,
+      attribute_discount_amount: 143.1,
+      discount_percentage: 18,
     },
   },
   className = "",
@@ -61,11 +85,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <Link
-      href={
-        product
-          ? `/shop/${product.slug}`
-          : "#"
-      }
+      href={product ? `/shop/${product.slug}` : "#"}
       className={`group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer ${className}`}
     >
       {/* Image Container */}
@@ -76,7 +96,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Main Image (Default) */}
         <img
           src={
-            imageError ? "/assets/img/product/product2.png" : product.primary_image
+            imageError
+              ? "/assets/img/product/product2.png"
+              : product.primary_image
           }
           alt={product.name}
           onError={() => setImageError(true)}
@@ -103,11 +125,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </span>
           )} */}
 
-          {/* {discountPercentage > 0 && (
+          {product.default_attribute.discount_percentage > 0 && (
             <span className="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm animate-in fade-in slide-in-from-left-2 duration-700">
-              -{discountPercentage}%
+              -{product.default_attribute.discount_percentage}%
             </span>
-          )} */}
+          )}
         </div>
 
         {/* Quick Action Buttons */}
@@ -115,7 +137,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Wishlist Button */}
           <button
             onClick={toggleWishlist}
-            className={`p-2.5 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg ${
+            className={`cursor-pointer p-2.5 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg ${
               isWishlisted
                 ? "bg-gradient-to-r from-pink-500 to-rose-600 text-white"
                 : "bg-white/90 text-gray-700 hover:bg-pink-50"
@@ -128,13 +150,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </button>
 
           {/* Quick View Button */}
-          <button
+          {/* <button
             onClick={handleQuickView}
             className="p-2.5 bg-white/90 backdrop-blur-md rounded-full text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
             aria-label="Quick view"
           >
             <Eye className="w-4 h-4" />
-          </button>
+          </button> */}
         </div>
 
         {/* Add to Cart - Hover Button */}
@@ -186,13 +208,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="flex items-center justify-between pt-2 border-t border-gray-100">
           <div className="flex items-baseline gap-2">
             <p className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-              BDT{/*{product.price.toFixed(2)}*/} 649
+              BDT {product.default_attribute.discount_percentage > 0 ? product.default_attribute.discounted_price.toFixed(2) : product.default_attribute.unit_price}
             </p>
-            {/* {product.prevprice > product.price && (
+            {product.default_attribute.discount_percentage > 0 && (
               <p className="text-sm text-gray-400 line-through">
-                ${product.prevprice.toFixed(2)}
+                BDT {product.default_attribute.unit_price}
               </p>
-            )} */}
+            )}
           </div>
 
           {/* Mobile Add to Cart Icon */}
@@ -206,17 +228,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Savings Badge */}
-        {/* {discountPercentage > 0 && (
+        {product.default_attribute.discount_percentage > 0 && (
           <div className="flex items-center justify-center">
             <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
-              Save ${(product.prevprice - product.price).toFixed(2)}
+              Save BDT {(product.default_attribute.attribute_discount_amount).toFixed(2)}
             </span>
           </div>
-        )} */}
+        )}
       </div>
-
-      {/* Decorative Corner Accent */}
-      <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-pink-500/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
     </Link>
   );
 };

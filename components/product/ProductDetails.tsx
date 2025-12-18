@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Star,
   Heart,
@@ -24,112 +24,17 @@ import {
 import Link from "next/link";
 import ProductCard from "@/components/home/ProductCard";
 import { SingleProduct } from "@/types";
-
-// Mock product data
-const productData = {
-  id: 1,
-  name: "Nivea Essential Lip Care",
-  brand: "Nivea",
-  category: "LIP BALMS/LIP CARE",
-  size: "10gm",
-  price: 49.0,
-  originalPrice: 135.0,
-  rating: 4,
-  reviewCount: 62,
-  inStock: true,
-  stockCount: 8,
-  sku: "12763",
-  images: [
-    "/assets/img/product/product1.png",
-    "/assets/img/product/product2.png",
-    "/assets/img/product/product3.png",
-    "/assets/img/product/product4.png",
-    "/assets/img/product/product5.png",
-  ],
-  description:
-    "Provides long lasting and intensive care. Effectively protects your lips from dryness in any weather. Moisturizing formula with Shea Butter. Dermatologically tested.",
-  features: [
-    "Provides long lasting and intensive care",
-    "Effectively protects your lips from dryness in any weather",
-    "Moisturizing formula with Shea Butter",
-    "Dermatologically tested",
-  ],
-  categories: [
-    "Makeup",
-    "Skin",
-    "Offers",
-    "LIP BALMS/LIP CARE",
-    "Lips",
-    "Lip Balm",
-    "Top Selling",
-    "Nivea Care Deals",
-  ],
-  tags: ["FMCG"],
-  badge: "SAVE 86 TAKA",
-  expiryDate: "NOVEMBER 2026",
-};
-
-// Related products
-const relatedProducts = [
-  {
-    mainImg: "/assets/img/product/product2.png",
-    subImg: "/assets/img/product/product1.png",
-    rate: 4,
-    prevprice: 60.99,
-    price: 49.99,
-    label: "Night Cream",
-    badge: "new",
-    discount: "10% off",
-    catId: 1,
-    category: "Skincare",
-    brand: "L'Oréal",
-  },
-  {
-    mainImg: "/assets/img/product/product3.png",
-    subImg: "/assets/img/product/product4.png",
-    rate: 5,
-    prevprice: 45.0,
-    price: 35.0,
-    label: "Face Cleanser",
-    badge: "hot",
-    discount: "15% off",
-    catId: 1,
-    category: "Skincare",
-    brand: "Dior",
-  },
-  {
-    mainImg: "/assets/img/product/product2.png",
-    subImg: "/assets/img/product/product1.png",
-    rate: 4,
-    prevprice: 55.0,
-    price: 45.0,
-    label: "Eye Cream",
-    badge: "",
-    discount: "",
-    catId: 1,
-    category: "Skincare",
-    brand: "Chanel",
-  },
-  {
-    mainImg: "/assets/img/product/product3.png",
-    subImg: "/assets/img/product/product4.png",
-    rate: 5,
-    prevprice: 70.0,
-    price: 60.0,
-    label: "Moisturizer",
-    badge: "sale",
-    discount: "20% off",
-    catId: 1,
-    category: "Skincare",
-    brand: "Fenty Beauty",
-  },
-];
+import Image from "next/image";
 
 const ProductDetails = ({ product }: { product: SingleProduct }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [main_image, setMainImage] = useState(product.primary_image);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [default_attribute, setDefaultAttribute] = useState(
+    product.attributes[0]
+  );
+  const imgRef = useRef<HTMLImageElement>(null);
   const [activeTab, setActiveTab] = useState<
     "description" | "ingredients" | "howto" | "reviews"
   >("description");
@@ -145,12 +50,17 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
   const handleAddToCart = () => {
     console.log(`Added ${quantity} items to cart`);
   };
+  const toggleFullScreen = () => {
+  const element = imgRef.current;
 
-  const discountAmount = productData.originalPrice - productData.price;
-  const discountPercentage = Math.round(
-    (discountAmount / productData.originalPrice) * 100
-  );
-
+  if (element) {
+    if (!document.fullscreenElement) {
+      element.requestFullscreen().catch((err) => console.log(err));
+    } else {
+      document.exitFullscreen();
+    }
+  }
+};
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumb */}
@@ -189,10 +99,13 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
             <div className="space-y-4 w-full lg:w-[420px]">
               {/* Main Image */}
               <div className="relative bg-white border border-gray-200 rounded-lg overflow-hidden group aspect-square">
-                <img
+                <Image
+                  ref={imgRef}
                   src={main_image}
                   alt={product.name}
                   className="w-full h-full object-contain p-4"
+                  width={500}
+                  height={500}
                 />
 
                 {/* Badges */}
@@ -206,7 +119,10 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
               </div> */}
 
                 {/* Fullscreen button */}
-                <button className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded hover:bg-white transition-colors cursor-pointer">
+                <button
+                  className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded hover:bg-white transition-colors cursor-pointer"
+                  onClick={toggleFullScreen}
+                >
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -284,7 +200,14 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
                     product.attributes.map((attr: any, idx: number) => (
                       <button
                         key={idx}
-                        className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600 transition-all cursor-pointer hover:bg-pink-50"
+                        className={`${
+                          default_attribute.id === attr.id
+                            ? "border-pink-500 text-pink-600 bg-pink-50"
+                            : ""
+                        } px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-pink-500 hover:text-pink-600 transition-all cursor-pointer hover:bg-pink-50`}
+                        onClick={() => {
+                          setDefaultAttribute(attr);
+                        }}
                       >
                         {attr.attribute_value}
                       </button>
@@ -300,18 +223,23 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
               {/* Price */}
               <div className="flex items-center gap-3 pb-3 border-b flex-wrap">
                 <span className="text-3xl lg:text-4xl font-bold text-pink-600">
-                  ৳{productData.price.toFixed(2)}
+                  ৳{default_attribute.discounted_price}
                 </span>
-                <span className="text-lg lg:text-xl text-gray-400 line-through">
-                  ৳{productData.originalPrice.toFixed(2)}
-                </span>
-                <span className="bg-purple-700 text-white px-2.5 py-1 rounded-md text-xs font-bold">
-                  {discountPercentage}% OFF
-                </span>
+                {default_attribute.discount_percentage > 0 && (
+                  <>
+                    <span className="text-lg lg:text-xl text-gray-400 line-through">
+                      ৳{default_attribute.unit_price}
+                    </span>
+
+                    <span className="bg-purple-700 text-white px-2.5 py-1 rounded-md text-xs font-bold">
+                      {default_attribute.discount_percentage}% OFF
+                    </span>
+                  </>
+                )}
               </div>
 
               <div className="text-green-600 font-medium text-sm">
-                Save ৳{discountAmount.toFixed(2)}
+                {/* Save ৳{discountAmount.toFixed(2)} */}
               </div>
 
               {/* Quantity & Actions */}
@@ -350,69 +278,59 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
 
                 <button
                   onClick={handleAddToCart}
-                  disabled={!productData.inStock}
-                  className="flex-1 min-w-[200px] py-3 px-6 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase text-sm"
+                  className="min-w-48 py-3 px-6 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase text-sm"
                 >
                   ADD TO CART
                 </button>
               </div>
 
               {/* Stock Status */}
-              <div className="flex items-center gap-2 text-red-600 text-sm">
+              {/* <div className="flex items-center gap-2 text-red-600 text-sm">
                 <Flame className="w-4 h-4" />
                 <span className="font-semibold">
-                  Only {productData.stockCount} items left in stock
+                  Only {product.stockCount} items left in stock
                 </span>
-              </div>
+              </div> */}
 
               {/* Brief Description */}
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                 <h3 className="font-bold text-gray-900 text-base">
                   Brief Description
                 </h3>
-                <ul className="space-y-2">
-                  {productData.features.map((feature, index) => (
-                    <li
-                      key={index}
-                      className="flex items-start gap-2 text-gray-700 text-sm"
-                    >
-                      <div className="w-1.5 h-1.5 bg-gray-700 rounded-full mt-1.5 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="#"
-                  className="text-pink-600 hover:text-pink-700 font-medium inline-block cursor-pointer text-sm"
-                >
-                  Read More...
-                </Link>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {product.short_description}
+                </p>
               </div>
 
               {/* Product Info Grid */}
               <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm pt-2">
-                <div>
+                {/* <div>
                   <span className="text-gray-600 block mb-1">SKU</span>
                   <p className="font-medium text-gray-900">{productData.sku}</p>
-                </div>
+                </div> */}
                 <div>
                   <span className="text-gray-600 block mb-1">Brands</span>
                   <p className="font-medium text-gray-900">
-                    {productData.brand}
+                    {product.brand.name}
                   </p>
                 </div>
                 <div className="col-span-2">
                   <span className="text-gray-600 block mb-1">Categories</span>
                   <p className="font-medium text-gray-900 text-xs leading-relaxed">
-                    {productData.categories.join(", ")}
+                    <Link
+                      className="text-pink-600"
+                      href={`/shop/category/${product.category.slug}`}
+                    >
+                      {product.category.name}
+                    </Link>
                   </p>
                 </div>
-                <div className="col-span-2">
+                {/* <div className="col-span-2">
                   <span className="text-gray-600 block mb-1">Tags</span>
                   <p className="font-medium text-gray-900">
                     {productData.tags.join(", ")}
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -453,7 +371,7 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
               >
                 How to Use
               </button>
-              <button
+              {/* <button
                 onClick={() => setActiveTab("reviews")}
                 className={`flex-shrink-0 py-4 px-6 font-semibold transition-colors cursor-pointer ${
                   activeTab === "reviews"
@@ -462,7 +380,7 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
                 }`}
               >
                 Reviews ({productData.reviewCount})
-              </button>
+              </button> */}
             </div>
 
             {/* Tab Content */}
@@ -470,7 +388,7 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
               {activeTab === "description" && (
                 <div className="space-y-4">
                   <p className="text-gray-700 leading-relaxed">
-                    {productData.description}
+                    {product.long_description}
                   </p>
                 </div>
               )}
@@ -481,8 +399,7 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
                     Full Ingredients List
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Water, Hyaluronic Acid, Vitamin C, Niacinamide, Glycerin,
-                    Botanical Extracts, Preservatives
+                    {product.ingredients}
                   </p>
                 </div>
               )}
@@ -493,9 +410,7 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
                     How to Use
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Apply 2-3 drops to clean, dry skin. Gently massage in upward
-                    circular motions. Use morning and evening for best results.
-                    Follow with moisturizer.
+                    {product.how_to_use}
                   </p>
                 </div>
               )}
