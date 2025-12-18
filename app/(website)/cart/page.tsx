@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
-import { 
-  Trash2, 
-  Plus, 
-  Minus, 
-  ShoppingBag, 
+import React, { useState } from "react";
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
   Tag,
   ArrowRight,
   Heart,
@@ -13,189 +13,79 @@ import {
   Truck,
   ShieldCheck,
   Gift,
-  Sparkles
-} from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-
-interface CartItem {
-  id: number;
-  name: string;
-  brand: string;
-  price: number;
-  originalPrice?: number;
-  quantity: number;
-  image: string;
-  inStock: boolean;
-  size?: string;
-}
+  Sparkles,
+} from "lucide-react";
+import Link from "next/link";
+import { useCartStore } from "@/store/cart-store";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Luxury Hydrating Serum",
-      brand: "Cosmetica Premium",
-      price: 89.99,
-      originalPrice: 119.99,
-      quantity: 2,
-      image: "/assets/img/product/product1.png",
-      inStock: true,
-      size: "50ml"
-    },
-    {
-      id: 2,
-      name: "Matte Lipstick",
-      brand: "Fenty Beauty",
-      price: 30.00,
-      originalPrice: 45.00,
-      quantity: 1,
-      image: "/assets/img/product/product2.png",
-      inStock: true,
-    },
-    {
-      id: 3,
-      name: "Eye Shadow Palette",
-      brand: "Dior",
-      price: 60.00,
-      quantity: 1,
-      image: "/assets/img/product/product3.png",
-      inStock: true,
-    },
-  ]);
+  const { items, updateQuantity, removeItem } = useCartStore();
 
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
-  const [showEmptyCart, setShowEmptyCart] = useState(false);
 
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
+  // ================== CALCULATIONS ==================
+  const subtotal = items.reduce(
+    (sum, item) => sum + item.unit_price * item.quantity,
+    0
+  );
 
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-    if (cartItems.length === 1) {
-      setShowEmptyCart(true);
-    }
-  };
+  const discount = items.reduce((sum, item) => sum + item.discount_amount, 0);
 
-  const moveToWishlist = (id: number) => {
-    console.log(`Moved item ${id} to wishlist`);
-    removeItem(id);
-  };
-
-  const applyPromoCode = () => {
-    if (promoCode.trim()) {
-      setAppliedPromo(promoCode);
-      setPromoCode("");
-    }
-  };
-
-  const removePromoCode = () => {
-    setAppliedPromo(null);
-  };
-
-  // Calculations
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const savings = cartItems.reduce((sum, item) => {
-    if (item.originalPrice) {
-      return sum + ((item.originalPrice - item.price) * item.quantity);
-    }
-    return sum;
-  }, 0);
-  const promoDiscount = appliedPromo ? subtotal * 0.1 : 0; // 10% discount
+  const promoDiscount = appliedPromo ? subtotal * 0.1 : 0;
   const shipping = subtotal > 50 ? 0 : 9.99;
-  const tax = (subtotal - promoDiscount) * 0.08; // 8% tax
-  const total = subtotal - promoDiscount + shipping + tax;
+  const tax = (subtotal - promoDiscount) * 0.08;
+
+  const total = subtotal - discount - promoDiscount + shipping + tax;
 
   const freeShippingProgress = subtotal >= 50 ? 100 : (subtotal / 50) * 100;
+
   const amountForFreeShipping = Math.max(0, 50 - subtotal);
 
-  if (showEmptyCart || cartItems.length === 0) {
+  // ================== EMPTY CART ==================
+  if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-pink-50/30 to-white">
-        <div className="px-[5%] py-16">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="w-32 h-32 bg-gradient-to-br from-pink-100 to-rose-100 rounded-full flex items-center justify-center mx-auto mb-8">
-              <ShoppingBag className="w-16 h-16 text-pink-400" />
-            </div>
-            
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Your Cart is Empty
-            </h1>
-            
-            <p className="text-gray-600 text-lg mb-8">
-              Looks like you haven't added anything to your cart yet. Start shopping to fill it up!
-            </p>
-
-            <Link href="/shop">
-              <button className="px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-3 mx-auto">
-                <ShoppingBag className="w-5 h-5" />
-                Start Shopping
-              </button>
-            </Link>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-              <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <Truck className="w-8 h-8 text-pink-600 mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900 mb-2">Free Shipping</h3>
-                <p className="text-sm text-gray-600">On orders over $50</p>
-              </div>
-              
-              <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <ShieldCheck className="w-8 h-8 text-pink-600 mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900 mb-2">Secure Payment</h3>
-                <p className="text-sm text-gray-600">100% secure checkout</p>
-              </div>
-              
-              <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-                <Gift className="w-8 h-8 text-pink-600 mx-auto mb-3" />
-                <h3 className="font-bold text-gray-900 mb-2">Free Returns</h3>
-                <p className="text-sm text-gray-600">30-day return policy</p>
-              </div>
-            </div>
-          </div>
+        <div className="px-[5%] py-16 text-center">
+          <ShoppingBag className="w-16 h-16 mx-auto text-pink-400 mb-6" />
+          <h1 className="text-3xl font-bold mb-4">Your Cart is Empty</h1>
+          <p className="text-gray-600 mb-8">
+            Start shopping to add items to your cart.
+          </p>
+          <Link href="/shop">
+            <button className="px-8 py-4 bg-pink-600 text-white rounded-xl font-bold">
+              Start Shopping
+            </button>
+          </Link>
         </div>
       </div>
     );
   }
 
+  // ================== CART UI ==================
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50/30 to-white">
       <div className="px-[5%] py-8 lg:py-12">
-        
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent mb-2">
-            Shopping Cart
-          </h1>
+          <h1 className="text-4xl font-bold text-pink-600">Shopping Cart</h1>
           <p className="text-gray-600">
-            {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
+            {items.length} {items.length === 1 ? "item" : "items"} in your cart
           </p>
         </div>
 
-        {/* Free Shipping Progress Bar */}
+        {/* Free Shipping */}
         {amountForFreeShipping > 0 && (
-          <div className="mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Truck className="w-5 h-5 text-pink-600" />
-                <span className="font-semibold text-gray-900">
-                  Add ${amountForFreeShipping.toFixed(2)} more for FREE shipping!
-                </span>
-              </div>
-              <span className="text-sm font-medium text-pink-600">
-                ${subtotal.toFixed(2)} / $50.00
+          <div className="mb-8 bg-white p-6 rounded-2xl border">
+            <div className="flex justify-between mb-2">
+              <span className="font-semibold">
+                Add BDT {amountForFreeShipping.toFixed(2)} for FREE shipping
               </span>
+              <span>BDT {subtotal.toFixed(2)} / BDT 50</span>
             </div>
-            <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-pink-500 to-rose-600 rounded-full transition-all duration-500"
+            <div className="h-3 bg-gray-200 rounded-full">
+              <div
+                className="h-full bg-pink-600 rounded-full"
                 style={{ width: `${freeShippingProgress}%` }}
               />
             </div>
@@ -203,247 +93,176 @@ const Cart = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Cart Items */}
+          {/* CART ITEMS */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item) => (
-              <div 
-                key={item.id}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
+            {items.map((item) => (
+              <div
+                key={`${item.product_id}-${item.product_attribute_id}`}
+                className="bg-white rounded-2xl p-6 border"
               >
                 <div className="flex gap-6">
-                  {/* Product Image */}
-                  <div className="relative w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 group">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    {item.originalPrice && (
-                      <div className="absolute top-2 left-2">
-                        <span className="px-2 py-1 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-bold rounded-full">
-                          -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  <img
+                    src={item.image}
+                    alt="product"
+                    className="w-32 h-32 object-cover rounded-xl"
+                  />
 
-                  {/* Product Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <Link href={`/shop/product-${item.id}`}>
-                          <h3 className="text-lg font-bold text-gray-900 hover:text-pink-600 transition-colors line-clamp-1">
-                            {item.name}
-                          </h3>
-                        </Link>
-                        <p className="text-sm text-gray-600 mb-1">{item.brand}</p>
-                        {item.size && (
-                          <p className="text-xs text-gray-500">Size: {item.size}</p>
-                        )}
-                        {item.inStock ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 mt-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full" />
-                            In Stock
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 mt-2">
-                            <div className="w-2 h-2 bg-red-500 rounded-full" />
-                            Out of Stock
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Remove Button */}
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <h3 className="font-bold text-lg">
+                        Product #{item.product_id}
+                      </h3>
                       <button
-                        onClick={() => removeItem(item.id)}
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                        aria-label="Remove item"
+                        className="cursor-pointer"
+                        onClick={() =>
+                          removeItem(item.product_id, item.product_attribute_id)
+                        }
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="text-red-500" />
                       </button>
                     </div>
 
-                    {/* Price and Quantity Controls */}
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex flex-col">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-2xl font-bold text-pink-600">
-                            ${item.price.toFixed(2)}
-                          </span>
-                          {item.originalPrice && (
-                            <span className="text-sm text-gray-400 line-through">
-                              ${item.originalPrice.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500 mt-1">
-                          Total: ${(item.price * item.quantity).toFixed(2)}
-                        </span>
-                      </div>
+                    <p className="text-pink-600 text-xl font-bold">
+                      BDT {item.unit_price.toFixed(2)}
+                    </p>
 
-                      {/* Quantity Controls */}
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center border-2 border-gray-300 rounded-xl overflow-hidden">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="p-2 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={item.quantity <= 1}
-                          >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <span className="px-4 py-2 font-bold min-w-[40px] text-center">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="p-2 hover:bg-gray-100 transition-colors"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-500">
+                      Item Total: BDT {item.subtotal.toFixed(2)}
+                    </p>
 
-                    {/* Actions */}
-                    <div className="flex gap-4 mt-4 pt-4 border-t border-gray-100">
+                    {/* Quantity */}
+                    <div className="flex items-center gap-3 mt-4">
                       <button
-                        onClick={() => moveToWishlist(item.id)}
-                        className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-pink-600 transition-colors"
+                        className="cursor-pointer"
+                        onClick={() =>
+                          updateQuantity(
+                            item.product_id,
+                            item.product_attribute_id,
+                            item.quantity - 1
+                          )
+                        }
+                        disabled={item.quantity <= 1}
                       >
-                        <Heart className="w-4 h-4" />
-                        Move to Wishlist
+                        <Minus />
+                      </button>
+
+                      <span className="font-bold">{item.quantity}</span>
+
+                      <button
+                        className="cursor-pointer"
+                        onClick={() =>
+                          updateQuantity(
+                            item.product_id,
+                            item.product_attribute_id,
+                            item.quantity + 1
+                          )
+                        }
+                      >
+                        <Plus />
                       </button>
                     </div>
+
+                    <button className="flex items-center gap-2 text-sm mt-4 cursor-pointer">
+                      <Heart className="w-4 h-4" />
+                      Move to Wishlist
+                    </button>
                   </div>
                 </div>
               </div>
             ))}
-
-            {/* Continue Shopping */}
-            <Link href="/shop">
-              <button className="w-full py-4 px-6 bg-white border-2 border-gray-300 hover:border-pink-500 text-gray-700 hover:text-pink-600 font-semibold rounded-xl transition-all hover:shadow-md flex items-center justify-center gap-2">
-                <ArrowRight className="w-5 h-5 rotate-180" />
-                Continue Shopping
-              </button>
-            </Link>
           </div>
 
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-24 space-y-6">
-              
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-pink-600" />
-                Order Summary
-              </h2>
+          {/* ORDER SUMMARY */}
+          <div className="bg-white rounded-2xl p-6 border h-fit sticky top-24">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Sparkles className="text-pink-600" /> Order Summary
+            </h2>
 
-              {/* Promo Code */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                  Promo Code
-                </label>
-                {appliedPromo ? (
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl border-2 border-pink-200">
-                    <div className="flex items-center gap-2">
-                      <Tag className="w-5 h-5 text-pink-600" />
-                      <span className="font-semibold text-pink-600">{appliedPromo}</span>
-                    </div>
-                    <button
-                      onClick={removePromoCode}
-                      className="p-1 hover:bg-white rounded-full transition-colors"
-                    >
-                      <X className="w-4 h-4 text-pink-600" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Enter code"
-                      className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-pink-400 focus:ring-4 focus:ring-pink-100 transition-all"
-                    />
-                    <button
-                      onClick={applyPromoCode}
-                      className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-all hover:scale-105 active:scale-95"
-                    >
-                      Apply
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Price Breakdown */}
-              <div className="space-y-3 py-6 border-y border-gray-200">
-                <div className="flex justify-between text-gray-700">
-                  <span>Subtotal</span>
-                  <span className="font-semibold">${subtotal.toFixed(2)}</span>
-                </div>
-
-                {savings > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Savings</span>
-                    <span className="font-semibold">-${savings.toFixed(2)}</span>
-                  </div>
-                )}
-
-                {appliedPromo && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Promo Discount (10%)</span>
-                    <span className="font-semibold">-${promoDiscount.toFixed(2)}</span>
-                  </div>
-                )}
-
-                <div className="flex justify-between text-gray-700">
-                  <span className="flex items-center gap-1">
-                    Shipping
-                    {shipping === 0 && (
-                      <span className="text-xs text-green-600 font-semibold">(FREE)</span>
-                    )}
-                  </span>
-                  <span className="font-semibold">
-                    {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
-                  </span>
-                </div>
-
-                <div className="flex justify-between text-gray-700">
-                  <span>Tax</span>
-                  <span className="font-semibold">${tax.toFixed(2)}</span>
-                </div>
-              </div>
-
-              {/* Total */}
-              <div className="flex justify-between items-baseline py-4">
-                <span className="text-xl font-bold text-gray-900">Total</span>
-                <span className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                  ${total.toFixed(2)}
-                </span>
-              </div>
-
-              {/* Checkout Button */}
-              <Link href="/checkout">
-                <button className="cursor-pointer w-full py-4 px-6 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
-                  Proceed to Checkout
-                  <ArrowRight className="w-5 h-5" />
+            {/* Promo */}
+            {appliedPromo ? (
+              <div className="flex justify-between bg-pink-50 p-3 rounded-xl mb-4">
+                <span>{appliedPromo}</span>
+                <button onClick={() => setAppliedPromo(null)}>
+                  <X />
                 </button>
-              </Link>
+              </div>
+            ) : (
+              <div className="flex gap-2 mb-4">
+                <input
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                  className="border px-3 py-2 rounded-xl w-full"
+                  placeholder="Promo code"
+                />
+                <button
+                  onClick={() => {
+                    if (promoCode) {
+                      setAppliedPromo(promoCode);
+                      setPromoCode("");
+                    }
+                  }}
+                  className="bg-black text-white px-4 rounded-xl"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
 
-              {/* Trust Badges */}
-              <div className="space-y-3 pt-6 border-t border-gray-200">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <ShieldCheck className="w-5 h-5 text-pink-600" />
-                  <span>Secure 256-bit SSL encryption</span>
+            {/* PRICE */}
+            <div className="space-y-2 text-sm border-y py-4">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>BDT {subtotal.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between text-green-600">
+                <span>Discount</span>
+                <span>- BDT {discount.toFixed(2)}</span>
+              </div>
+
+              {appliedPromo && (
+                <div className="flex justify-between text-green-600">
+                  <span>Promo</span>
+                  <span>- BDT {promoDiscount.toFixed(2)}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Truck className="w-5 h-5 text-pink-600" />
-                  <span>Free shipping on orders over $50</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <Gift className="w-5 h-5 text-pink-600" />
-                  <span>30-day easy returns</span>
-                </div>
+              )}
+
+              <div className="flex justify-between">
+                <span>Shipping</span>
+                <span>{shipping === 0 ? "FREE" : `BDT ${shipping}`}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Tax</span>
+                <span>BDT {tax.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between font-bold text-xl py-4">
+              <span>Total</span>
+              <span className="text-pink-600">BDT {total.toFixed(2)}</span>
+            </div>
+
+            <Link
+              href="/checkout"
+              className="w-full bg-pink-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2"
+            >
+              Checkout <ArrowRight />
+            </Link>
+
+            {/* Trust */}
+            <div className="mt-6 space-y-2 text-sm text-gray-600">
+              <div className="flex gap-2">
+                <ShieldCheck className="text-pink-600" />
+                Secure Checkout
+              </div>
+              <div className="flex gap-2">
+                <Truck className="text-pink-600" />
+                Free shipping over BDT 500000
+              </div>
+              <div className="flex gap-2">
+                <Gift className="text-pink-600" />
+                Easy returns
               </div>
             </div>
           </div>
