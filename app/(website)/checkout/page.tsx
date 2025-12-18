@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapPin,
   CreditCard,
@@ -12,33 +12,24 @@ import {
   Shield,
 } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/authStore";
+import apiClient from "@/lib/axios";
+import { Address } from "@/types/user";
+import { addressService } from "@/services/user.service";
 
 export default function CheckoutPage() {
   const [selectedAddress, setSelectedAddress] = useState(0);
   const [selectedPayment, setSelectedPayment] = useState(0);
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>(undefined);
 
-  const { items } = useCartStore();
+  const { items, clearCart } = useCartStore();
+
+  const user = useAuthStore().user;
 
   // ================= ADDRESSES =================
-  const addresses = [
-    {
-      id: 1,
-      title: "Home",
-      name: "Sarah Johnson",
-      address: "324 King St. Owosso, MI 48867",
-      phone: "+1 888-456-668",
-      isDefault: true,
-    },
-    {
-      id: 2,
-      title: "Office",
-      name: "Sarah Johnson",
-      address: "281 Virginia Ave. Westwood, NJ 07675",
-      phone: "+1 888-456-668",
-    },
-  ];
+  const [addresses, setAddresses] = useState<Address[]>([]);
 
   // ================= PAYMENT METHODS =================
   const paymentMethods = [
@@ -87,6 +78,86 @@ export default function CheckoutPage() {
     }
   };
 
+  const fetchAddress = async () => {
+      try {
+        const data = await addressService.list();
+        setAddresses(data);
+      } catch (error) {
+        console.error("Failed to fetch orders", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+  
+    useEffect(() => {
+      fetchAddress();
+    }, []);
+
+  const handleOrder = async () => {
+  if (!user?.id) {
+    alert("Please login to place an order");
+    return;
+  }
+
+  if (items.length === 0) {
+    alert("Your cart is empty");
+    return;
+  }
+
+  const selectedAddr = addresses[selectedAddress];
+  const selectedPay = paymentMethods[selectedPayment];
+
+  const payload = {
+    products: items.map((item) => ({
+      product_id: item.product_id,
+      product_attribute_id: item.product_attribute_id,
+      unit_price: item.unit_price,
+      quantity: item.quantity,
+      subtotal: item.subtotal,
+      discount_amount: item.discount_amount,
+      discount_percentage: item.discount_percentage ?? null,
+    })),
+
+    customer_id: user.id,
+
+    receiver_name: user.name,
+    receiver_phone: user.phone,
+    receiver_email: user.email ?? null,
+
+    shipping_city: "Dhaka", // 🔁 make dynamic if needed
+    shipping_area: "Banani",
+    shipping_location: selectedAddr.address,
+    customer_address_id: selectedAddressId,
+
+    payment_status: "pending",
+    payment_method: selectedPay.type, // "cod" | "online"
+
+    delivery_charge: selectedPay.charge,
+    order_note: promoApplied
+      ? `Promo applied: ${promoCode}`
+      : null,
+  };
+
+  try {
+    const response = await apiClient.post("/order/place-order", payload);
+
+    console.log("Order success:", response.data);
+
+    // OPTIONAL
+    // clearCart();
+    // router.push(`/order-success/${response.data.order_id}`);
+
+    alert("Order placed successfully!");
+  } catch (error: any) {
+    console.error("Order failed:", error);
+    alert(
+      error?.response?.data?.message ??
+      "Failed to place order. Please try again."
+    );
+  }
+};
+
+
   // ================= EMPTY CART =================
   if (items.length === 0) {
     return (
@@ -116,31 +187,34 @@ export default function CheckoutPage() {
                 </button>
               </div>
 
-              {addresses.map((addr, index) => (
-                <div
+                {addresses.length > 0 ? (
+                addresses.map((addr, index) => (
+                  <div
                   key={addr.id}
-                  onClick={() => setSelectedAddress(index)}
+                  onClick={() => setSelectedAddressId(addr.id)}
                   className={`border-2 rounded-xl p-4 mb-3 cursor-pointer ${
-                    selectedAddress === index
-                      ? "border-pink-500 bg-pink-50"
-                      : "border-gray-200"
+                    selectedAddressId === addr.id
+                    ? "border-pink-500 bg-pink-50"
+                    : "border-gray-200"
                   }`}
-                >
+                  >
                   <div className="flex gap-3">
                     <div className="w-5 h-5 rounded-full border flex items-center justify-center">
-                      {selectedAddress === index && (
-                        <Check className="w-3 h-3 text-pink-600" />
-                      )}
+                    {selectedAddress === index && (
+                      <Check className="w-3 h-3 text-pink-600" />
+                    )}
                     </div>
                     <div>
-                      <p className="font-bold">{addr.title}</p>
-                      <p className="text-sm">{addr.name}</p>
-                      <p className="text-sm text-gray-600">{addr.address}</p>
-                      <p className="text-sm text-gray-600">{addr.phone}</p>
+                    <p className="font-bold">{addr.title}</p>
+                    <p className="text-sm">{addr.city}, {addr.area}</p>
+                    <p className="text-sm text-gray-600">{addr.address}</p>
                     </div>
                   </div>
-                </div>
-              ))}
+                  </div>
+                ))
+                ) : (
+                <p className="text-gray-500 text-sm">No addresses found. Add a new address.</p>
+                )}
             </div>
 
             {/* PAYMENT */}
@@ -257,7 +331,7 @@ export default function CheckoutPage() {
               </span>
             </div>
 
-            <button className="w-full py-4 bg-pink-600 text-white rounded-xl font-bold flex items-center justify-center gap-2">
+            <button onClick={handleOrder} className="w-full py-4 bg-pink-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer">
               Place Order <ChevronRight />
             </button>
 
