@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Star, ShoppingCart, Heart, Eye, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types";
+import { useCartStore } from "@/store/cart-store";
 
 interface ProductCardProps {
   product?: Product;
@@ -56,6 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const addItem = useCartStore((state) => state.addItem);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -162,7 +164,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Add to Cart - Hover Button */}
         <div className="absolute bottom-0 left-0 right-0 z-20 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
-            onClick={handleAddToCart}
+            // onClick={handleAddToCart}
+            onClick={() =>
+              addItem({
+                product_id: product.id,
+                product_attribute_id: product.default_attribute.id ?? null,
+                unit_price: product.default_attribute.discounted_price,
+                quantity: 1,
+                discount_amount:
+                  product.default_attribute.attribute_discount_amount,
+                discount_percentage:
+                  product.default_attribute.discount_percentage,
+                image: product.primary_image,
+              })
+            }
             className="w-full cursor-pointer py-3 px-4 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 active:scale-95"
           >
             <ShoppingCart className="w-5 h-5" />
@@ -208,7 +223,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="flex items-center justify-between pt-2 border-t border-gray-100">
           <div className="flex items-baseline gap-2">
             <p className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-              BDT {product.default_attribute.discount_percentage > 0 ? product.default_attribute.discounted_price.toFixed(2) : product.default_attribute.unit_price}
+              BDT{" "}
+              {product.default_attribute.discount_percentage > 0
+                ? product.default_attribute.discounted_price.toFixed(2)
+                : product.default_attribute.unit_price}
             </p>
             {product.default_attribute.discount_percentage > 0 && (
               <p className="text-sm text-gray-400 line-through">
@@ -219,7 +237,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Mobile Add to Cart Icon */}
           <button
-            onClick={handleAddToCart}
+            onClick={() =>
+              addItem({
+                product_id: product.id,
+                product_attribute_id: product.default_attribute.id ?? null,
+                unit_price: product.default_attribute.discounted_price,
+                quantity: 1,
+                discount_amount:
+                  product.default_attribute.attribute_discount_amount,
+                discount_percentage:
+                  product.default_attribute.discount_percentage,
+                image: product.primary_image,
+              })
+            }
             className="lg:hidden p-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-full hover:from-pink-600 hover:to-rose-700 transition-all hover:scale-110 active:scale-95 shadow-md"
             aria-label="Add to cart"
           >
@@ -231,12 +261,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {product.default_attribute.discount_percentage > 0 && (
           <div className="flex items-center justify-center">
             <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
-              Save BDT {(product.default_attribute.attribute_discount_amount).toFixed(2)}
+              Save BDT{" "}
+              {product.default_attribute.attribute_discount_amount.toFixed(2)}
             </span>
           </div>
         )}
       </div>
-      
     </Link>
   );
 };
