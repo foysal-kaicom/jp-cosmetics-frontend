@@ -3,6 +3,7 @@ import { Star, ShoppingCart, Heart, Eye, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
+import { showToast } from "@/utils/toast";
 
 interface ProductCardProps {
   product?: Product;
@@ -61,8 +62,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log("Added to cart:", product.name);
-    // Add your cart logic here
+    addItem({
+      product_id: product.id,
+      product_name: product.name,
+      attribute_value: product.default_attribute.attribute_value ?? "",
+      product_attribute_id: product.default_attribute.id ?? null,
+      // unit_price: product.default_attribute.discounted_price,
+      unit_price: parseFloat(product.default_attribute.unit_price),
+      quantity: 1,
+      discount_amount: product.default_attribute.attribute_discount_amount,
+      discount_percentage: product.default_attribute.discount_percentage,
+      image: product.primary_image,
+    });
+    showToast.success("Product added to cart successfully!");
   };
 
   const handleQuickView = (e: React.MouseEvent) => {
@@ -165,19 +177,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="absolute bottom-0 left-0 right-0 z-20 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <button
             // onClick={handleAddToCart}
-            onClick={() =>
-              addItem({
-                product_id: product.id,
-                product_attribute_id: product.default_attribute.id ?? null,
-                unit_price: product.default_attribute.discounted_price,
-                quantity: 1,
-                discount_amount:
-                  product.default_attribute.attribute_discount_amount,
-                discount_percentage:
-                  product.default_attribute.discount_percentage,
-                image: product.primary_image,
-              })
-            }
+            onClick={handleAddToCart}
             className="w-full cursor-pointer py-3 px-4 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 active:scale-95"
           >
             <ShoppingCart className="w-5 h-5" />
@@ -237,19 +237,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Mobile Add to Cart Icon */}
           <button
-            onClick={() =>
-              addItem({
-                product_id: product.id,
-                product_attribute_id: product.default_attribute.id ?? null,
-                unit_price: product.default_attribute.discounted_price,
-                quantity: 1,
-                discount_amount:
-                  product.default_attribute.attribute_discount_amount,
-                discount_percentage:
-                  product.default_attribute.discount_percentage,
-                image: product.primary_image,
-              })
-            }
+            onClick={handleAddToCart}
             className="lg:hidden p-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-full hover:from-pink-600 hover:to-rose-700 transition-all hover:scale-110 active:scale-95 shadow-md"
             aria-label="Add to cart"
           >
