@@ -4,10 +4,13 @@ import Link from "next/link";
 import { Product } from "@/types";
 import { useCartStore } from "@/store/cart-store";
 import { showToast } from "@/utils/toast";
+import { wishListService } from "@/services/user.service";
+import { useWishlistStore } from "@/store/wishListStore";
 
 interface ProductCardProps {
   product?: Product;
   className?: string;
+  wishlisted:boolean
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -55,10 +58,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
     },
   },
   className = "",
+  wishlisted : wishlisted
 }) => {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(wishlisted || false);
   const [imageError, setImageError] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
+  const { remove, add } = useWishlistStore();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -83,9 +88,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
     // Add your quick view modal logic here
   };
 
-  const toggleWishlist = (e: React.MouseEvent) => {
+  const toggleWishlist = async (e: React.MouseEvent, productId: number) => {
     e.preventDefault();
-    setIsWishlisted(!isWishlisted);
+    try {
+      if (!isWishlisted) {
+        await add(productId);
+        setIsWishlisted(true);
+        showToast.success("Product added to cart wishlist!");
+      } else {
+        await remove(productId);
+        setIsWishlisted(false);
+        showToast.success("Product removed to cart wishlist!");
+      }
+    } catch (error) {
+      console.error("Wishlist action failed", error);
+    }
   };
 
   const getBadgeStyles = (badge: string) => {
@@ -150,7 +167,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="absolute top-3 right-3 z-20 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
           {/* Wishlist Button */}
           <button
-            onClick={toggleWishlist}
+            onClick={(e) => toggleWishlist(e, product.id)}
             className={`cursor-pointer p-2.5 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg ${
               isWishlisted
                 ? "bg-gradient-to-r from-pink-500 to-rose-600 text-white"

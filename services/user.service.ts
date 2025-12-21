@@ -7,8 +7,10 @@ import type {
   Profile,
   UpdateProfilePayload,
   UpdatePasswordPayload,
+  ApiResponse,
 } from "@/types/user";
 
+import type {Product} from "@/types/index"
 
 export const profileService = {
   async view(): Promise<Profile> {
@@ -27,21 +29,20 @@ export const profileService = {
   },
 };
 
-
 export const orderService = {
   async list() {
     const res = await apiClient.get<OrderListResponse>("/customer/orders-list");
     return res.data.data;
   },
 
-  async detail(orderId: number) {
-    const res = await apiClient.get<OrderDetailResponse>(
+  async detail(orderId: number): Promise<OrderDetailResponse> {
+    const res = await apiClient.get<ApiResponse<OrderDetailResponse>>(
       `/customer/order-details/${orderId}`
     );
+
     return res.data.data;
   },
 };
-
 
 export const addressService = {
   async list(): Promise<Address[]> {
@@ -65,5 +66,22 @@ export const addressService = {
 
   async setDefault(id: number): Promise<void> {
     await apiClient.post(`/customer/addresses/${id}/default`);
+  },
+};
+
+export const wishListService = {
+  async list(): Promise<Product[]> {
+    const res = await apiClient.get("/customer/wishlist");
+    return res.data.data;
+  },
+
+  async add(productId: number): Promise<void> {
+    await apiClient.post("/customer/wishlist", {
+      product_id: productId,
+    });
+  },
+
+  async delete(id: number): Promise<void> {
+    await apiClient.delete(`/customer/wishlist/${id}`);
   },
 };

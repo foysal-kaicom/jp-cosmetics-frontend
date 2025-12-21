@@ -1,3 +1,10 @@
+export type ApiResponse<T> = {
+  success: boolean;
+  message: string;
+  data: T;
+};
+
+
 // user type
 
 export type Profile = {
@@ -179,3 +186,4 @@ export type AddressPayload = {
   is_default: 0 | 1;
   status: number;
 };
+

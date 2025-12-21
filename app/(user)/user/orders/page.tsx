@@ -109,7 +109,7 @@ export default function OrdersSection() {
                 >
                   View Details
                 </button>
-                <button
+                {/* <button
                   onClick={() => {
                     setSelectedOrderid(order.id);
                     setShowOrderModal(true);
@@ -117,7 +117,7 @@ export default function OrdersSection() {
                   className="flex-1 px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-xl font-semibold hover:bg-pink-50 transition-colors cursor-pointer"
                 >
                   Track Order
-                </button>
+                </button> */}
                 <button className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer">
                   Reorder
                 </button>

@@ -8,6 +8,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/authStore";
+import { useWishlistStore } from "@/store/wishListStore";
 
 const navdata = [
   { id: "home", label: "Home", link: "/" },
@@ -24,6 +26,8 @@ export default function Header({ data }: HeaderProps) {
   const pathname = usePathname();
   const headerLogo = data.header_logo || "/assets/img/jp-cosmetica-logo.png";
   const { items } = useCartStore();
+  const user = useAuthStore().user;
+  const wishlistItem = useWishlistStore().items;
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -72,7 +76,7 @@ export default function Header({ data }: HeaderProps) {
             </p>
           </div>
           <div className="py-2.5 pl-4 md:pl-6 font-light hover:text-pink-100 cursor-pointer transition-colors">
-            Welcome (Login)
+            Welcome {user?.name ? user?.name : "(Login)"}
           </div>
         </div>
       </div>
@@ -117,7 +121,7 @@ export default function Header({ data }: HeaderProps) {
             </nav>
 
             {/* Desktop Icons */}
-            <div className="hidden md:flex items-center gap-4 lg:gap-6">
+            <div className="hidden lg:flex items-center gap-4 lg:gap-6">
               {/* Search Button */}
               <button
                 onClick={() => setSearchOpen(true)}
@@ -137,7 +141,9 @@ export default function Header({ data }: HeaderProps) {
                 <div className="p-2 rounded-full group-hover:bg-pink-50 transition-colors">
                   <User className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-medium">Account</span>
+                <span className="text-[10px] font-medium">
+                  {user?.name ? user?.name : "Account"}
+                </span>
               </Link>
 
               {/* Wishlist */}
@@ -150,7 +156,7 @@ export default function Header({ data }: HeaderProps) {
                 </div>
                 <span className="text-[10px] font-medium">Wishlist</span>
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                  0
+                  {wishlistItem.length}
                 </span>
               </Link>
 
@@ -214,20 +220,22 @@ export default function Header({ data }: HeaderProps) {
                   <span className="text-xs">Search</span>
                 </button>
                 <Link
-                  href="/account"
+                  href="/user/dashboard"
                   className="flex flex-col items-center gap-2 text-gray-600"
                 >
                   <User className="w-6 h-6" />
-                  <span className="text-xs">Account</span>
+                  <span className="text-xs">
+                    {user?.name ? user?.name : "Account"}
+                  </span>
                 </Link>
                 <Link
-                  href="/wishlist"
+                  href="/user/wishlist"
                   className="flex flex-col items-center gap-2 text-gray-600 relative"
                 >
                   <Heart className="w-6 h-6" />
                   <span className="text-xs">Wishlist</span>
                   <span className="absolute top-0 right-6 bg-pink-600 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">
-                    0
+                   {wishlistItem.length}
                   </span>
                 </Link>
                 <Link
