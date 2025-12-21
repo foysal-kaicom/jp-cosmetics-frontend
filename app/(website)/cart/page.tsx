@@ -33,8 +33,8 @@ const Cart = () => {
   const discount = items.reduce((sum, item) => sum + item.discount_amount, 0);
 
   const promoDiscount = appliedPromo ? subtotal * 0.1 : 0;
-  const shipping = subtotal > 50 ? 0 : 9.99;
-  const tax = (subtotal - promoDiscount) * 0.08;
+  const shipping = 0;
+  const tax = 0;
 
   const total = subtotal - discount - promoDiscount + shipping + tax;
 
@@ -98,7 +98,7 @@ const Cart = () => {
             {items.map((item) => (
               <div
                 key={`${item.product_id}-${item.product_attribute_id}`}
-                className="bg-white rounded-2xl p-6 border"
+                className="bg-white rounded-2xl p-6 border border-pink-300"
               >
                 <div className="flex gap-6">
                   <img
@@ -110,7 +110,7 @@ const Cart = () => {
                   <div className="flex-1">
                     <div className="flex justify-between">
                       <h3 className="font-bold text-lg">
-                        Product #{item.product_id}
+                        {item.product_name} ({item.attribute_value})
                       </h3>
                       <button
                         className="cursor-pointer"
@@ -227,15 +227,15 @@ const Cart = () => {
                 </div>
               )}
 
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span>Shipping</span>
                 <span>{shipping === 0 ? "FREE" : `BDT ${shipping}`}</span>
-              </div>
+              </div> */}
 
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span>Tax</span>
                 <span>BDT {tax.toFixed(2)}</span>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex justify-between font-bold text-xl py-4">

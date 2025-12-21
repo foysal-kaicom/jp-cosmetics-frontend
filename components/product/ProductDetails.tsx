@@ -25,8 +25,10 @@ import Link from "next/link";
 import ProductCard from "@/components/home/ProductCard";
 import { SingleProduct } from "@/types";
 import Image from "next/image";
+import { useCartStore } from "@/store/cart-store";
 
 const ProductDetails = ({ product }: { product: SingleProduct }) => {
+  const addItem = useCartStore((state) => state.addItem);
   const [selectedImage, setSelectedImage] = useState(0);
   const [main_image, setMainImage] = useState(product.primary_image);
   const [quantity, setQuantity] = useState(1);
@@ -47,20 +49,17 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
     }
   };
 
-  const handleAddToCart = () => {
-    console.log(`Added ${quantity} items to cart`);
-  };
   const toggleFullScreen = () => {
-  const element = imgRef.current;
+    const element = imgRef.current;
 
-  if (element) {
-    if (!document.fullscreenElement) {
-      element.requestFullscreen().catch((err) => console.log(err));
-    } else {
-      document.exitFullscreen();
+    if (element) {
+      if (!document.fullscreenElement) {
+        element.requestFullscreen().catch((err) => console.log(err));
+      } else {
+        document.exitFullscreen();
+      }
     }
-  }
-};
+  };
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumb */}
@@ -277,7 +276,21 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
                 </div>
 
                 <button
-                  onClick={handleAddToCart}
+                  onClick={() =>
+                    addItem({
+                      product_id: product.id,
+                      product_name: product.name,
+                      attribute_value: default_attribute.attribute_value ?? "",
+                      product_attribute_id: default_attribute.id ?? null,
+                      unit_price: parseFloat(default_attribute.unit_price),
+                      quantity: quantity,
+                      discount_amount:
+                        default_attribute.attribute_discount_amount,
+                      discount_percentage:
+                        default_attribute.discount_percentage,
+                      image: product.primary_image,
+                    })
+                  }
                   className="min-w-48 py-3 px-6 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold rounded-lg transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase text-sm"
                 >
                   ADD TO CART
