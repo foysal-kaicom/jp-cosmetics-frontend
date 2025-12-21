@@ -187,3 +187,11 @@ export type AddressPayload = {
   status: number;
 };
 
+
+export type DashboardResponse = {
+  total_orders: number;
+  wishlist_items: number;
+  reward_points: number;
+  total_spent: string;
+};
+

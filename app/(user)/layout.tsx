@@ -13,42 +13,19 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
+import { dashboardService } from "@/services/user.service";
+import { DashboardResponse } from "@/types/user";
 
 interface SidebarItem {
   id: string;
   label: string;
   icon: any;
-  badge?: number;
+  badge?: number | null;
   url: string;
 }
 
-const sidebarItems: SidebarItem[] = [
-  { id: "overview", label: "Overview", icon: User, url: "/user/dashboard" },
-  {
-    id: "orders",
-    label: "My Orders",
-    icon: Package,
-    badge: 2,
-    url: "/user/orders",
-  },
-  {
-    id: "wishlist",
-    label: "Wishlist",
-    icon: Heart,
-    badge: 5,
-    url: "/user/wishlist",
-  },
-  { id: "addresses", label: "Addresses", icon: MapPin, url: "/user/addresses" },
-  {
-    id: "rewards",
-    label: "Rewards",
-    icon: Gift,
-    badge: 150,
-    url: "/user/rewards",
-  },
-  { id: "settings", label: "Settings", icon: Settings, url: "/user/settings" },
-];
+
 
 export default function UserLayout({
   children,
@@ -59,8 +36,55 @@ export default function UserLayout({
   const user = useAuthStore().user;
   const logout = useAuthStore((s) => s.logout);
 
-  useEffect(() => {
+  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const sidebarItems: SidebarItem[] = [
+  { id: "overview", label: "Overview", icon: User, url: "/user/dashboard" },
+  {
+    id: "orders",
+    label: "My Orders",
+    icon: Package,
+    badge: dashboard?.total_orders || null,
+    url: "/user/orders",
+  },
+  {
+    id: "wishlist",
+    label: "Wishlist",
+    icon: Heart,
+    badge: dashboard?.wishlist_items || null,
+    url: "/user/wishlist",
+  },
+  { id: "addresses", label: "Addresses", icon: MapPin, url: "/user/addresses" },
+  {
+    id: "rewards",
+    label: "Rewards",
+    icon: Gift,
+    badge: dashboard?.reward_points || null ,
+    url: "/user/rewards",
+  },
+  { id: "settings", label: "Settings", icon: Settings, url: "/user/settings" },
+];
+
+
+   useEffect(() => {
     if (!user) return;
+
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        const data = await dashboardService.fetch();
+        setDashboard(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
   }, [user]);
   return (
     <>

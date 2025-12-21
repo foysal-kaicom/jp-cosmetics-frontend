@@ -8,6 +8,7 @@ import type {
   UpdateProfilePayload,
   UpdatePasswordPayload,
   ApiResponse,
+  DashboardResponse
 } from "@/types/user";
 
 import type {Product} from "@/types/index"
@@ -83,5 +84,14 @@ export const wishListService = {
 
   async delete(id: number): Promise<void> {
     await apiClient.delete(`/customer/wishlist/${id}`);
+  },
+};
+
+export const dashboardService = {
+  async fetch() {
+    const res = await apiClient.get<{ data: DashboardResponse }>(
+      "/customer/dashboard"
+    );
+    return res.data.data;
   },
 };
