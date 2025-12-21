@@ -15,10 +15,14 @@ import { useEffect, useState } from "react";
 
 import { orderService } from "@/services/user.service";
 import type { Order } from "@/types/user";
+import { dashboardService } from "@/services/user.service";
+import { DashboardResponse } from "@/types/user";
 
 export default function DashboardComponent() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -32,6 +36,21 @@ export default function DashboardComponent() {
       }
     };
 
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        const data = await dashboardService.fetch();
+        setDashboard(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+
     fetchOrders();
   }, []);
 
@@ -42,28 +61,28 @@ export default function DashboardComponent() {
         <StatCard
           icon={Package}
           label="Total Orders"
-          value="24"
+          value={dashboard?.total_orders || null}
           change="+3 this month"
           color="pink"
         />
         <StatCard
           icon={Heart}
           label="Wishlist Items"
-          value="5"
+          value={dashboard?.wishlist_items || null}
           change="2 back in stock"
           color="rose"
         />
         <StatCard
           icon={Gift}
           label="Reward Points"
-          value="150"
+          value={dashboard?.reward_points || null}
           change="Earn 50 more"
           color="purple"
         />
         <StatCard
           icon={ShoppingBag}
           label="Total Spent"
-          value="$1,240"
+          value={dashboard?.total_spent || null}
           change="This year"
           color="pink"
         />
@@ -81,10 +100,7 @@ export default function DashboardComponent() {
 
         <div className="space-y-4">
           {orders.map((order) => (
-            <OrderCard
-              key={order.id}
-              order={order}
-            />
+            <OrderCard key={order.id} order={order} />
           ))}
         </div>
       </div>

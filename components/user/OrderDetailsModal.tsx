@@ -106,7 +106,7 @@ export const OrderDetailsModal = ({
               const attr = item.product_attribute;
 
               return (
-                <div>
+                <div key={index}>
                   <div className="flex items-start gap-3 min-w-0">
                     {/* Product Image */}
                     {item?.product?.primary_image ? (

@@ -122,15 +122,15 @@ const HomeTrending = ({ products }: { products: Product[] }) => {
     // Breakpoints for responsiveness
     breakpoints: {
       "(max-width: 1280px)": {
-        slides: { perView: 4, spacing: 16 },
+        slides: { perView: 3.5, spacing: 16 },
       },
       "(max-width: 1024px)": {
-        slides: { perView: 3, spacing: 12 },
+        slides: { perView: 2.5, spacing: 12 },
       },
       "(max-width: 768px)": {
         slides: { perView: 2, spacing: 10 },
       },
-      "(max-width: 480px)": {
+      "(max-width: 680px)": {
         slides: { perView: 1, spacing: 10 },
       },
     },
@@ -179,7 +179,7 @@ const HomeTrending = ({ products }: { products: Product[] }) => {
         )}
 
         {/* Slider Container */}
-        <div ref={sliderRef} className="keen-slider scroll-fade-up z-0 py-4">
+        <div ref={sliderRef} className="keen-slider scroll-fade-up z-0 py-4 border">
           {products.map((product, index) => (
               <ProductCard
                 key={index}

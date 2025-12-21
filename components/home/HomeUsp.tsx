@@ -30,18 +30,18 @@ export default function HomeUsp() {
 
   return (
     <WebPageWrapper>
-      <div className="grid grid-cols-2 md:grid-cols-4 bg-[#ec6b81] text-white p-10 rounded-xl gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 bg-[#ec6b81] text-white p-3 lg:p-10 rounded-xl gap-6">
         {usp.map((item, index) => {
           const Icon = item.icon;
           return (
             <div key={index} className="flex items-center gap-3 group">
               <div className="border p-2 rounded-full">
-                <Icon strokeWidth={1} className="size-9 group-hover:animate-pulse" />
+                <Icon strokeWidth={1} className="size-4 lg:size-9 group-hover:animate-pulse" />
               </div>
 
               <div className="group-hover:animate-pulse">
-                <p className="font-semibold">{item.label}</p>
-                <p className="text-sm">{item.label2}</p>
+                <p className="text-sm lg:text-base font-semibold">{item.label}</p>
+                <p className="text-xs lg:text-sm">{item.label2}</p>
               </div>
             </div>
           );
