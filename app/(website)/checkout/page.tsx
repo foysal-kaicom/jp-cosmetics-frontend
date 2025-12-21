@@ -16,13 +16,16 @@ import { useAuthStore } from "@/store/authStore";
 import apiClient from "@/lib/axios";
 import { Address } from "@/types/user";
 import { addressService } from "@/services/user.service";
+import { useRouter } from "next/navigation";
+import { showToast } from "@/utils/toast";
+import Link from "next/link";
 
 export default function CheckoutPage() {
-  const [selectedAddress, setSelectedAddress] = useState(0);
+  const router = useRouter();
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedPayment, setSelectedPayment] = useState(0);
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>(undefined);
 
   const { items, clearCart } = useCartStore();
 
@@ -35,7 +38,7 @@ export default function CheckoutPage() {
   const paymentMethods = [
     {
       id: 1,
-      type: "cod",
+      type: "COD",
       name: "Cash On Delivery",
       charge: 60,
       isDefault: true,
@@ -48,8 +51,7 @@ export default function CheckoutPage() {
     },
   ];
 
-  const selectedPaymentCharge =
-    paymentMethods[selectedPayment]?.charge ?? 0;
+  const selectedPaymentCharge = paymentMethods[selectedPayment]?.charge ?? 0;
 
   // ================= CALCULATIONS =================
   const subtotal = items.reduce(
@@ -57,20 +59,13 @@ export default function CheckoutPage() {
     0
   );
 
-  const discount = items.reduce(
-    (sum, item) => sum + item.discount_amount,
-    0
-  );
+  const discount = items.reduce((sum, item) => sum + item.discount_amount, 0);
 
   const promoDiscount = promoApplied ? subtotal * 0.05 : 0; // 5% promo
-  const tax = (subtotal - promoDiscount) * 0.05; // 5% VAT
+  const tax = 0; // 5% VAT
 
   const total =
-    subtotal -
-    discount -
-    promoDiscount +
-    tax +
-    selectedPaymentCharge;
+    subtotal - discount - promoDiscount + tax + selectedPaymentCharge;
 
   const handleApplyPromo = () => {
     if (promoCode.trim()) {
@@ -79,84 +74,80 @@ export default function CheckoutPage() {
   };
 
   const fetchAddress = async () => {
-      try {
-        const data = await addressService.list();
-        setAddresses(data);
-      } catch (error) {
-        console.error("Failed to fetch orders", error);
-      } finally {
-        // setLoading(false);
-      }
-    };
-  
-    useEffect(() => {
-      fetchAddress();
-    }, []);
-
-  const handleOrder = async () => {
-  if (!user?.id) {
-    alert("Please login to place an order");
-    return;
-  }
-
-  if (items.length === 0) {
-    alert("Your cart is empty");
-    return;
-  }
-
-  const selectedAddr = addresses[selectedAddress];
-  const selectedPay = paymentMethods[selectedPayment];
-
-  const payload = {
-    products: items.map((item) => ({
-      product_id: item.product_id,
-      product_attribute_id: item.product_attribute_id,
-      unit_price: item.unit_price,
-      quantity: item.quantity,
-      subtotal: item.subtotal,
-      discount_amount: item.discount_amount,
-      discount_percentage: item.discount_percentage ?? null,
-    })),
-
-    customer_id: user.id,
-
-    receiver_name: user.name,
-    receiver_phone: user.phone,
-    receiver_email: user.email ?? null,
-
-    shipping_city: "Dhaka", // 🔁 make dynamic if needed
-    shipping_area: "Banani",
-    shipping_location: selectedAddr.address,
-    customer_address_id: selectedAddressId,
-
-    payment_status: "pending",
-    payment_method: selectedPay.type, // "cod" | "online"
-
-    delivery_charge: selectedPay.charge,
-    order_note: promoApplied
-      ? `Promo applied: ${promoCode}`
-      : null,
+    try {
+      const data = await addressService.list();
+      setAddresses(data);
+    } catch (error) {
+      console.error("Failed to fetch orders", error);
+    } finally {
+      // setLoading(false);
+    }
   };
 
-  try {
-    const response = await apiClient.post("/order/place-order", payload);
+  useEffect(() => {
+    fetchAddress();
+  }, []);
 
-    console.log("Order success:", response.data);
+  const handleOrder = async () => {
+    if (!selectedAddress) {
+      showToast.error("Please select a delivery address");
+      return;
+    }
+    if (!user?.id) {
+      showToast.error("Please login to place an order");
+      return;
+    }
 
-    // OPTIONAL
-    // clearCart();
-    // router.push(`/order-success/${response.data.order_id}`);
+    if (items.length === 0) {
+      showToast.error("Your cart is empty");
+      return;
+    }
 
-    alert("Order placed successfully!");
-  } catch (error: any) {
-    console.error("Order failed:", error);
-    alert(
-      error?.response?.data?.message ??
-      "Failed to place order. Please try again."
-    );
-  }
-};
+    const selectedPay = paymentMethods[selectedPayment];
 
+    const payload = {
+      products: items.map((item) => ({
+        product_id: item.product_id,
+        product_attribute_id: item.product_attribute_id,
+        unit_price: item.unit_price,
+        quantity: item.quantity,
+        subtotal: item.subtotal,
+        discount_amount: item.discount_amount,
+        discount_percentage: item.discount_percentage ?? null,
+      })),
+
+      customer_id: user.id,
+
+      receiver_name: user.name,
+      receiver_phone: user.phone,
+      receiver_email: user.email ?? null,
+
+      shipping_city: selectedAddress?.city ?? "",
+      shipping_area: selectedAddress?.area ?? "",
+      shipping_location: selectedAddress?.address ?? "",
+      customer_address_id: selectedAddress?.id ?? null,
+
+      payment_status: "pending",
+      payment_method: selectedPay.type, // "COD" | "online"
+
+      delivery_charge: selectedPay.charge,
+      order_note: promoApplied ? `Promo applied: ${promoCode}` : null,
+    };
+
+    try {
+      const response = await apiClient.post("/order/place-order", payload);
+
+      showToast.success("Order placed successfully!");
+
+      clearCart();
+      router.push(`/user/orders?order_id=${response.data.order_id}`);
+    } catch (error: any) {
+      showToast.error(
+        error?.response?.data?.message ??
+          "Failed to place order. Please try again."
+      );
+    }
+  };
 
   // ================= EMPTY CART =================
   if (items.length === 0) {
@@ -182,39 +173,43 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-bold flex items-center gap-2">
                   <MapPin /> Delivery Address
                 </h2>
-                <button className="text-pink-600 flex items-center gap-1">
+                <Link href="/user/addresses" className="text-pink-600 flex items-center gap-1">
                   <Plus className="w-4 h-4" /> Add New
-                </button>
+                </Link>
               </div>
 
-                {addresses.length > 0 ? (
+              {addresses.length > 0 ? (
                 addresses.map((addr, index) => (
                   <div
-                  key={addr.id}
-                  onClick={() => setSelectedAddressId(addr.id)}
-                  className={`border-2 rounded-xl p-4 mb-3 cursor-pointer ${
-                    selectedAddressId === addr.id
-                    ? "border-pink-500 bg-pink-50"
-                    : "border-gray-200"
-                  }`}
+                    key={index}
+                    onClick={() => setSelectedAddress(addr)}
+                    className={`border-2 rounded-xl p-4 mb-3 cursor-pointer ${
+                      selectedAddress?.id === addr.id
+                        ? "border-pink-500 bg-pink-50"
+                        : "border-gray-200"
+                    }`}
                   >
-                  <div className="flex gap-3">
-                    <div className="w-5 h-5 rounded-full border flex items-center justify-center">
-                    {selectedAddress === index && (
-                      <Check className="w-3 h-3 text-pink-600" />
-                    )}
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full border flex items-center justify-center">
+                        {selectedAddress?.id === addr.id && (
+                          <Check className="w-3 h-3 text-pink-600" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-bold">{addr.title}</p>
+                        <p className="text-sm">
+                          {addr.city}, {addr.area}
+                        </p>
+                        <p className="text-sm text-gray-600">{addr.address}</p>
+                      </div>
                     </div>
-                    <div>
-                    <p className="font-bold">{addr.title}</p>
-                    <p className="text-sm">{addr.city}, {addr.area}</p>
-                    <p className="text-sm text-gray-600">{addr.address}</p>
-                    </div>
-                  </div>
                   </div>
                 ))
-                ) : (
-                <p className="text-gray-500 text-sm">No addresses found. Add a new address.</p>
-                )}
+              ) : (
+                <p className="text-gray-500 text-sm">
+                  No addresses found. Add a new address.
+                </p>
+              )}
             </div>
 
             {/* PAYMENT */}
@@ -250,16 +245,14 @@ export default function CheckoutPage() {
               {items.map((item) => (
                 <div
                   key={`${item.product_id}-${item.product_attribute_id}`}
-                  className="flex gap-4 pb-4 border-b last:border-0"
+                  className="flex gap-4 pb-4 border-b last:border-0 border-pink-300 mb-2"
                 >
                   <img
                     src={item.image}
                     className="w-20 h-20 rounded-xl object-cover"
                   />
                   <div className="flex-1">
-                    <p className="font-bold">
-                      Product #{item.product_id}
-                    </p>
+                    <p className="font-bold">{item.product_name} ({item.attribute_value})</p>
                     <p className="text-sm text-gray-600">
                       Qty: {item.quantity}
                     </p>
@@ -313,10 +306,10 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span>VAT (5%)</span>
                 <span>৳ {tax.toFixed(2)}</span>
-              </div>
+              </div> */}
 
               <div className="flex justify-between">
                 <span>Payment Charge</span>
@@ -326,12 +319,13 @@ export default function CheckoutPage() {
 
             <div className="flex justify-between font-bold text-lg py-4">
               <span>Total</span>
-              <span className="text-pink-600">
-                ৳ {total.toFixed(2)}
-              </span>
+              <span className="text-pink-600">৳ {total.toFixed(2)}</span>
             </div>
 
-            <button onClick={handleOrder} className="w-full py-4 bg-pink-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer">
+            <button
+              onClick={handleOrder}
+              className="w-full py-4 bg-pink-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer"
+            >
               Place Order <ChevronRight />
             </button>
 

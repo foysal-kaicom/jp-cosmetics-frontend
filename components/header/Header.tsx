@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
-import { BusinessInfo, NavItem } from "@/types";
+import { BusinessInfo, Product } from "@/types";
+import apiClient from "@/lib/axios";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useCartStore } from "@/store/cart-store";
 
-const navdata: NavItem[] = [
+const navdata = [
   { id: "home", label: "Home", link: "/" },
   { id: "shop", label: "Shop", link: "/shop" },
   { id: "contact", label: "Contact", link: "/contact" },
@@ -21,14 +22,45 @@ interface HeaderProps {
 
 export default function Header({ data }: HeaderProps) {
   const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-
   const headerLogo = data.header_logo || "/assets/img/jp-cosmetica-logo.png";
   const { items } = useCartStore();
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [productList, setProductList] = useState<any[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (searchOpen && searchQuery != "") {
+      setProductList([]);
+      try {
+        apiClient
+          .get<{ success: boolean; data: any[]; message: string }>(
+            `/products/search?query=${encodeURIComponent(searchQuery)}`
+          )
+          .then((res) => {
+            if (res.data.success) {
+              setProductList(res.data.data);
+            }
+          })
+          .catch((error: any) => {
+            // toast.error(
+            //   error?.response?.data?.message || "Can not get products at this moment"
+            // );
+          });
+      } catch (error: any) {
+        // toast.error(
+        //   error?.response?.data?.message ||
+        //     "Can not get subscription plans at this moment"
+        // );
+      }
+    }
+  }, [searchOpen, searchQuery]);
+
   return (
     <>
-      {/* Elegant Top Bar with Gradient */}
+      {/* Top Bar */}
       <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white shadow-sm">
         <div className="px-[5%] flex items-center justify-between text-[11px] md:text-xs">
           <div className="flex items-center divide-x divide-pink-400/30">
@@ -45,7 +77,7 @@ export default function Header({ data }: HeaderProps) {
         </div>
       </div>
 
-      {/* Premium Sticky Navbar */}
+      {/* Sticky Navbar */}
       <div className="sticky top-0 bg-white/95 backdrop-blur-xl shadow-sm z-50 border-b border-gray-100">
         <div className="px-[5%]">
           <div className="flex items-center justify-between py-4 md:py-5 gap-4">
@@ -86,36 +118,16 @@ export default function Header({ data }: HeaderProps) {
 
             {/* Desktop Icons */}
             <div className="hidden md:flex items-center gap-4 lg:gap-6">
-              {/* Search */}
-              <div className="relative">
-                {searchOpen ? (
-                  <div className="flex items-center gap-2 border-2 border-pink-500 rounded-full px-4 py-2 bg-pink-50/50 animate-in fade-in slide-in-from-right-2 duration-300">
-                    <input
-                      type="text"
-                      placeholder="Search products..."
-                      className="focus:outline-none w-40 lg:w-48 bg-transparent text-sm placeholder:text-gray-400"
-                      autoFocus
-                    />
-                    <Search className="w-4 h-4 text-pink-600" />
-                    <button
-                      onClick={() => setSearchOpen(false)}
-                      className="ml-1"
-                    >
-                      <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setSearchOpen(true)}
-                    className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group cursor-pointer"
-                  >
-                    <div className="p-2 rounded-full group-hover:bg-pink-50 transition-colors">
-                      <Search className="w-5 h-5" />
-                    </div>
-                    <span className="text-[10px] font-medium">Search</span>
-                  </button>
-                )}
-              </div>
+              {/* Search Button */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex flex-col items-center gap-1 text-gray-600 hover:text-pink-600 transition-colors group cursor-pointer"
+              >
+                <div className="p-2 rounded-full group-hover:bg-pink-50 transition-colors">
+                  <Search className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-medium">Search</span>
+              </button>
 
               {/* Account */}
               <Link
@@ -172,7 +184,7 @@ export default function Header({ data }: HeaderProps) {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="lg:hidden py-4 border-t border-gray-100 animate-in slide-in-from-top duration-300">
+            <div className="lg:hidden py-4 border-t border-gray-100">
               <nav className="flex flex-col gap-4">
                 {navdata.map((item) => (
                   <Link
@@ -190,9 +202,14 @@ export default function Header({ data }: HeaderProps) {
                 ))}
               </nav>
 
-              {/* Mobile Icons */}
               <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
-                <button className="flex flex-col items-center gap-2 text-gray-600 cursor-pointer">
+                <button
+                  onClick={() => {
+                    setSearchOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex flex-col items-center gap-2 text-gray-600"
+                >
                   <Search className="w-6 h-6" />
                   <span className="text-xs">Search</span>
                 </button>
@@ -220,7 +237,7 @@ export default function Header({ data }: HeaderProps) {
                   <ShoppingCart className="w-6 h-6" />
                   <span className="text-xs">Cart</span>
                   <span className="absolute top-0 right-6 bg-pink-600 text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center">
-                    0
+                    {items?.length ?? 0}
                   </span>
                 </Link>
               </div>
@@ -228,6 +245,103 @@ export default function Header({ data }: HeaderProps) {
           )}
         </div>
       </div>
+
+      {/* Search Modal */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="min-h-screen flex items-start justify-center p-4 pt-20">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[80vh] flex flex-col animate-in slide-in-from-top duration-300">
+              {/* Modal Header */}
+              <div className="p-6 border-b border-gray-100">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search for cosmetics products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:bg-white transition-all text-gray-700"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSearchOpen(false);
+                      setSearchQuery("");
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                  >
+                    <X className="w-6 h-6 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {searchQuery === "" ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Search className="w-8 h-8 text-pink-500" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      Search Products
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      Start typing to search for your favorite cosmetics
+                    </p>
+                  </div>
+                ) : productList.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-500 mb-4">
+                      Found {productList.length} products
+                    </p>
+                    {productList.map((product) => (
+                      <button
+                        key={product.id}
+                        // href={`/shop/${product.slug}`}
+                        onClick={() => {
+                          setSearchOpen(false);
+                          setSearchQuery("");
+                          router.push(`/shop/${product.slug}`);
+                        }}
+                        className="w-full flex items-start gap-4 p-4 hover:bg-pink-50 rounded-xl transition-colors group cursor-pointer"
+                      >
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-16 h-16 object-cover rounded-lg"
+                        />
+                        <div className="flex-1 text-left">
+                          <h4 className="font-medium text-gray-900 group-hover:text-pink-600 transition-colors">
+                            {product.name}
+                          </h4>
+                          <p className="text-sm text-gray-500">Category</p>
+                        </div>
+                        <div className="text-lg font-semibold text-pink-600">
+                          BDT {product.default_price}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Search className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      No products found
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      Try searching with different keywords
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
