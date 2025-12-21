@@ -1,4 +1,4 @@
-// user type 
+// user type
 
 export type Profile = {
   name: string;
@@ -18,21 +18,52 @@ export type UpdatePasswordPayload = {
   new_password_confirmation: string;
 };
 
-// order type 
+// order type
+
+export type OrderProduct = {
+  id: number;
+  name: string;
+  primary_image: string;
+};
+
+export type ItemAttribute = {
+  id: number;
+  product_id: number;
+  attribute_name: string;
+  attribute_value: string;
+};
 
 export type OrderItem = {
-  id: number;
-  order_id: number;
-  product_id: number;
-  product_attribute_id: number;
+  product: OrderProduct;
+  product_attribute: ItemAttribute;
   quantity: number;
   unit_price: string;
   sub_total: string;
-  coupon_id: number | null;
   discount_amount: string;
   payable: string;
-  created_at: string;
-  updated_at: string;
+  coupon: number | null;
+};
+
+export type OrderReceiver = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
+export type OrderShipping = {
+  city: string;
+  area: string;
+  location: string;
+};
+
+export type OrderAddress = {
+  id: number;
+  title: string;
+  city: string;
+  area: string;
+  address: string;
+  status: 0 | 1;
+  is_default: 0 | 1;
 };
 
 export type Order = {
@@ -43,12 +74,25 @@ export type Order = {
   delivery_charge: string;
   discount_amount: string;
   payable_total: string;
-  payment_status: "pending" | "processing" | "cancel" | "failed" | "success" | "refunded";
+  payment_status:
+    | "pending"
+    | "processing"
+    | "cancel"
+    | "failed"
+    | "success"
+    | "refunded";
   transaction_id: string | null;
   payment_method: string;
   payment_channel: string | null;
   additionals: string | null;
-  status: "pending" | "confirm" | "dispatched" | "delivered" | "cancelled" | "returned" | "success";
+  status:
+    | "pending"
+    | "confirm"
+    | "dispatched"
+    | "delivered"
+    | "cancelled"
+    | "returned"
+    | "success";
   receiver_name: string;
   receiver_email: string;
   receiver_phone: string;
@@ -63,37 +107,75 @@ export type Order = {
   details: OrderItem[];
 };
 
+export type OrderDetail = {
+  order_number: string;
+  sub_total_amount: string;
+  delivery_charge: string;
+  discount_amount: string;
+  payable_total: string;
+
+  payment_status:
+    | "pending"
+    | "processing"
+    | "cancel"
+    | "failed"
+    | "success"
+    | "refunded";
+  payment_method: string;
+  transaction_id: string | null;
+
+  order_status:
+    | "pending"
+    | "confirm"
+    | "dispatched"
+    | "delivered"
+    | "cancelled"
+    | "returned"
+    | "success";
+  current_status: string;
+
+  last_update_at: string;
+  created_at: string;
+
+  receiver: OrderReceiver;
+  shipping: OrderShipping;
+  address: OrderAddress;
+
+  order_note: string | null;
+  remarks: string | null;
+};
+
 export type OrderListResponse = {
   data: Order[];
 };
 
 export type OrderDetailResponse = {
-  data: Order;
+  order: OrderDetail;
+  items: OrderItem[];
+  timeline: any[];
 };
 
-
-// address type 
+// address type
 
 export type Address = {
-  id: number;  
+  id: number;
   title: string;
-  name:string;
+  name: string;
   city: string;
   area: string;
   address: string;
-  phone:string;
+  phone: string;
   status: 0 | 1;
   is_default: 0 | 1;
 };
 
 export type AddressPayload = {
   title: string;
-  name:string;
+  name: string;
   city: string;
   area: string;
   address: string;
-  phone:string;
+  phone: string;
   is_default: 0 | 1;
-  status:number
+  status: number;
 };
-

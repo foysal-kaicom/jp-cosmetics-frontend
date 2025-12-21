@@ -63,12 +63,10 @@ function AddressesSection() {
 
   if (loading) return <div>Loading address...</div>;
 
-  if (!address.length)
-    return (
-      <div className="size-full flex justify-center items-center text-gray-500 text-lg">
-        No address found
-      </div>
-    );
+  // if (!address.length)
+  //   return (
+  //
+  //   );
 
   return (
     <>
@@ -82,26 +80,31 @@ function AddressesSection() {
             Add New
           </button>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {address.map((item) => (
-            <AddressCard
-              key={item.id}
-              title={item.title}
-              name={user?.name}
-              address={item.address}
-              area={item.area}
-              city={item.city}
-              phone={item.phone || user?.phone}
-              isDefault={item.is_default}
-              onEdit={() => {
-                setSelectedAddress(item);
-                setShowEditModal(true);
-              }}
-              onRemove={() => setShowDeleteModal(true)}
-            />
-          ))}
-        </div>
+        {!address.length ? (
+          <div className="size-full flex justify-center items-center text-gray-500 text-lg">
+            No address found
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {address.map((item) => (
+              <AddressCard
+                key={item.id}
+                title={item.title}
+                name={user?.name}
+                address={item.address}
+                area={item.area}
+                city={item.city}
+                phone={item.phone || user?.phone}
+                isDefault={item.is_default}
+                onEdit={() => {
+                  setSelectedAddress(item);
+                  setShowEditModal(true);
+                }}
+                onRemove={() => setShowDeleteModal(true)}
+              />
+            ))}
+          </div>
+        )}
       </div>
       {/* Modals */}
       <AddressModal
