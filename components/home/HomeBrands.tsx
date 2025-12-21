@@ -22,7 +22,7 @@ const HomeBrands = ({ brands }: { brands: Brand[] }) => {
           {brands.map((brand, index) => (
             <Link
               key={brand.id || index}
-              href={`/brands/${brand.slug}` || "#"}
+              href={`/shop?page=1&brand_ids=${brand.id}`}
               className="group relative flex flex-col items-center justify-center p-2 bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100"
             >
               {/* Gradient background on hover */}

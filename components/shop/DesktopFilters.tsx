@@ -49,8 +49,8 @@ const DesktopFilters = ({
               <input
                 type="checkbox"
                 value={cat.name}
-                checked={filters.category.includes(cat.name)}
-                onChange={() => onFilterChange("category", cat.name)}
+                checked={filters.category.includes(cat.id.toString())}
+                onChange={() => onFilterChange("category", cat.id.toString())}
                 className="w-4 h-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500 focus:ring-2 cursor-pointer"
               />
               <span className="text-gray-700 group-hover:text-pink-600 transition-colors text-sm">
@@ -75,8 +75,8 @@ const DesktopFilters = ({
               <input
                 type="checkbox"
                 value={brand.name}
-                checked={filters.brand.includes(brand.name)}
-                onChange={() => onFilterChange("brand", brand.name)}
+                checked={filters.brand.includes(brand.id.toString())}
+                onChange={() => onFilterChange("brand", brand.id.toString())}
                 className="w-4 h-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500 focus:ring-2 cursor-pointer"
               />
               <span className="text-gray-700 group-hover:text-pink-600 transition-colors text-sm">
@@ -88,7 +88,7 @@ const DesktopFilters = ({
       </div>
 
       {/* Price Range */}
-      <div>
+      {/* <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-gray-900 text-sm uppercase tracking-wide">
             Price Range
@@ -117,7 +117,7 @@ const DesktopFilters = ({
           <span>BDT 0</span>
           <span>BDT 1000</span>
         </div>
-      </div>
+      </div> */}
     </div>
   </aside>
 );

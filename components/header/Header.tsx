@@ -327,7 +327,7 @@ export default function Header({ data }: HeaderProps) {
                           <p className="text-sm text-gray-500">Category</p>
                         </div>
                         <div className="text-lg font-semibold text-pink-600">
-                          BDT {product.default_price}
+                          BDT {product?.default_attribute?.discounted_price}
                         </div>
                       </button>
                     ))}
