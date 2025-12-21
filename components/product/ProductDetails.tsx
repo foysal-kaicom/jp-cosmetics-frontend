@@ -494,7 +494,7 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* {relatedProducts.map((product, index) => (
-              <ProductCard key={index} product={product} />
+              <ProductCard key={index} product={product} wishlisted={false} />
             ))} */}
           </div>
         </div>
