@@ -54,8 +54,8 @@ const MobileFilters = ({
                   <input
                     type="checkbox"
                     value={cat.name}
-                    checked={filters.category.includes(cat.name)}
-                    onChange={() => onFilterChange('category', cat.name)}
+                    checked={filters.category.includes(cat.id.toString())}
+                    onChange={() => onFilterChange('category', cat.id.toString())}
                     className="w-5 h-5 rounded border-gray-300 text-pink-600 focus:ring-pink-500 cursor-pointer"
                   />
                   <span className="text-gray-700">{cat.name}</span>
@@ -72,8 +72,8 @@ const MobileFilters = ({
                   <input
                     type="checkbox"
                     value={brand.name}
-                    checked={filters.brand.includes(brand.name)}
-                    onChange={() => onFilterChange('brand', brand.name)}
+                    checked={filters.brand.includes(brand.id.toString())}
+                    onChange={() => onFilterChange('brand', brand.id.toString())}
                     className="w-5 h-5 rounded border-gray-300 text-pink-600 focus:ring-pink-500 cursor-pointer"
                   />
                   <span className="text-gray-700">{brand.name}</span>
@@ -82,7 +82,7 @@ const MobileFilters = ({
             </div>
           </div>
 
-          <div className="pb-6">
+          {/* <div className="pb-6">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-gray-900 text-sm uppercase tracking-wide">Price Range</h3>
               <span className="text-pink-600 font-bold">${filters.price}</span>
@@ -97,10 +97,10 @@ const MobileFilters = ({
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-pink-600"
             />
             <div className="flex justify-between text-xs text-gray-500 mt-2">
-              <span>$0</span>
-              <span>$1000</span>
+              <span>BDT 0</span>
+              <span>BDT 1000</span>
             </div>
-          </div>
+          </div> */}
 
           <button
             onClick={onClose}
