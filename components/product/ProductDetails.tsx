@@ -80,7 +80,7 @@ const ProductDetails = ({ product }: { product: SingleProduct }) => {
           </Link>
           <ChevronRight className="w-3.5 h-3.5" />
           <Link
-            href={`/shop/category/${product.category.slug}`}
+            href={`/shop?page=1&category_id=${product.category.id}`}
             className="hover:text-pink-600 transition-colors cursor-pointer"
           >
             {product.category.name}

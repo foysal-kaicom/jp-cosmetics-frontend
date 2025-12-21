@@ -1,4 +1,5 @@
 import { Category } from '@/types';
+import Link from 'next/link';
 import React from 'react';
 
 
@@ -10,6 +11,7 @@ interface CategoryCardProps {
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ category, className = '' }) => {
   return (
+    <Link href={`/shop?page=1&category_id=${category.id}`}>
     <div className={`group rounded-xl overflow-clip scroll-fade-up cursor-pointer ${className}`}>
       {/* Image Container */}
       <div className="h-[250px] overflow-clip">
@@ -30,6 +32,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, className = '' })
         </p>
       </div>
     </div>
+    </Link>
   );
 };
 

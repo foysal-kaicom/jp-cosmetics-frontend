@@ -54,7 +54,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(paginationData.current_page - 1)}
           disabled={paginationData.current_page === 1}
-          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-pink-400 hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-gray-700 transition-colors"
+          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-pink-400 hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-gray-700 transition-colors cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Previous</span>
@@ -78,7 +78,7 @@ const Pagination = ({
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`min-w-[40px] px-3 py-2 rounded-lg font-medium transition-all ${
+                className={`min-w-[40px] px-3 py-2 rounded-lg font-medium transition-all cursor-pointer ${
                   isActive
                     ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-md'
                     : 'border border-gray-300 text-gray-700 hover:border-pink-400 hover:text-pink-600'
@@ -94,7 +94,7 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(paginationData.current_page + 1)}
           disabled={paginationData.current_page === paginationData.last_page}
-          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-pink-400 hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-gray-700 transition-colors"
+          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-pink-400 hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-gray-700 transition-colors cursor-pointer"
         >
           <span className="hidden sm:inline">Next</span>
           <ChevronRight className="w-4 h-4" />
