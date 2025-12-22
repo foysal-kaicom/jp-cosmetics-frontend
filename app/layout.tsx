@@ -6,66 +6,87 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { getBusinessInfo } from "@/services/home.service";
 import { ToastContainer } from "react-toastify";
 
-// export const metadata: Metadata = {
-//   title: "Cosmetica - Premium Beauty & Cosmetics",
-//   description:
-//     "Discover elegance and self-care with Cosmetica's exclusive collection of premium beauty products and cosmetics.",
-// };
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://www.jpcosmetica.biz";
-
 export async function generateMetadata(): Promise<Metadata> {
-  const data = await getBusinessInfo();
-  const siteName = data?.business_name || "Cosmetica";
-  const siteDescription = `Premium Beauty & Cosmetics. Located at ${
-    data?.address || "your location"
-  }.`;
-  const siteUrl = data?.website_url || BASE_URL;
+  const DEFAULT_SITE_NAME = "Cosmetica";
+  const DEFAULT_DESCRIPTION = "Premium Beauty & Cosmetics";
+  const DEFAULT_SITE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.jpcosmetica.biz";
+  const DEFAULT_IMAGE = "/assets/img/jp-cosmetica-logo.png";
+  const DEFAULT_FAVICON = "/favicon.ico";
 
-  const socialImage =
-    data?.header_advertisement || "/assets/img/jp-cosmetica-logo.png";
-  const favicon = data?.favicon_icon || "/favicon.ico";
+  try {
+    const data = await getBusinessInfo();
 
-  return {
-    metadataBase: new URL(siteUrl),
+    const siteName = data?.business_name || DEFAULT_SITE_NAME;
+    const siteDescription = data?.address
+      ? `Premium Beauty & Cosmetics. Located at ${data.address}.`
+      : DEFAULT_DESCRIPTION;
 
-    title: {
-      default: siteName,
-      template: `%s | ${siteName}`,
-    },
-    description: siteDescription,
+    let siteUrl = DEFAULT_SITE_URL;
+    if (data?.website_url) {
+      try {
+        siteUrl = new URL(data.website_url).toString();
+      } catch {
+        siteUrl = DEFAULT_SITE_URL;
+      }
+    }
 
-    // Icons
-    icons: {
-      icon: favicon,
-      shortcut: favicon,
-      apple: favicon,
-    },
+    const socialImage = data?.header_advertisement || DEFAULT_IMAGE;
+    const favicon = data?.favicon_icon || DEFAULT_FAVICON;
 
-    openGraph: {
-      title: siteName,
+    return {
+      metadataBase: new URL(siteUrl),
+
+      title: {
+        default: siteName,
+        template: `%s | ${siteName}`,
+      },
+
       description: siteDescription,
-      url: siteUrl,
-      siteName: siteName,
-      images: [
-        {
-          url: socialImage,
-          width: 1200,
-          height: 630,
-          alt: `${siteName} Preview`,
-        },
-      ],
-      locale: "en_US",
-      type: "website",
-    },
 
-    twitter: {
-      card: "summary_large_image",
-      title: siteName,
-      description: siteDescription,
-      images: [socialImage], // Uses the logo or ad image
-    },
-  };
+      icons: {
+        icon: favicon,
+        shortcut: favicon,
+        apple: favicon,
+      },
+
+      openGraph: {
+        title: siteName,
+        description: siteDescription,
+        url: siteUrl,
+        siteName,
+        images: [
+          {
+            url: socialImage,
+            width: 1200,
+            height: 630,
+            alt: `${siteName} Preview`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+
+      twitter: {
+        card: "summary_large_image",
+        title: siteName,
+        description: siteDescription,
+        images: [socialImage],
+      },
+    };
+  } catch (error) {
+    // LAST-LINE DEFENSE — app NEVER crashes
+    console.error("Metadata generation failed:", error);
+
+    return {
+      metadataBase: new URL(DEFAULT_SITE_URL),
+      title: DEFAULT_SITE_NAME,
+      description: DEFAULT_DESCRIPTION,
+      icons: {
+        icon: DEFAULT_FAVICON,
+      },
+    };
+  }
 }
 
 export default async function RootLayout({
